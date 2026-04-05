@@ -1,0 +1,157 @@
+.card {
+  display: block;
+  padding: 18px;
+  border: 1px solid rgba(221, 208, 194, 0.88);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 249, 0.92);
+  box-shadow: var(--shadow);
+}
+
+.subtleCard {
+  display: block;
+  padding: 18px;
+  border: 1px solid rgba(221, 208, 194, 0.78);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 253, 249, 0.85);
+}
+
+.featuredCard {
+  min-width: 260px;
+  padding: 22px;
+  border-radius: calc(var(--radius) + 2px);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 249, 0.88), rgba(246, 240, 230, 0.95)),
+    rgba(255, 253, 249, 0.88);
+}
+
+.featuredRegion {
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.featuredTitle {
+  margin: 12px 0 8px;
+  font-family: var(--font-serif);
+  font-size: 1.42rem;
+}
+
+.copy {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.spotTop {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.spotRegion {
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.spotTitle {
+  margin: 6px 0 0;
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.spotCount {
+  flex-shrink: 0;
+  min-width: 58px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(136, 113, 90, 0.08);
+  color: var(--accent-2);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.spotWork {
+  margin-top: 14px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.spotLink {
+  margin-top: 14px;
+  color: var(--accent);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.anchorCard {
+  padding: 22px;
+  border-radius: calc(var(--radius) + 4px);
+  background:
+    radial-gradient(circle at top right, rgba(179, 138, 87, 0.14), transparent 28%),
+    rgba(255, 253, 249, 0.94);
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.workTitle {
+  margin: 12px 0 0;
+  font-family: var(--font-serif);
+  font-size: 1.56rem;
+  line-height: 1.25;
+}
+
+.author {
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.intro {
+  margin: 16px 0 0;
+  color: var(--ink);
+  line-height: 1.8;
+}
+
+.cta {
+  display: inline-flex;
+  margin-top: 18px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.previewActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.miniList {
+  display: grid;
+  gap: 12px;
+}
