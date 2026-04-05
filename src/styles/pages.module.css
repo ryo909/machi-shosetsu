@@ -315,6 +315,17 @@ a.detailBlock:hover,
   gap: 12px;
 }
 
+.compactStepRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
 .filterLabel {
   margin: 0 0 10px;
   color: var(--muted);
@@ -357,6 +368,7 @@ a.detailBlock:hover,
 .mapExplorerStage {
   display: grid;
   gap: 18px;
+  align-items: start;
 }
 
 .mapFiltersPanel {
@@ -380,6 +392,11 @@ a.detailBlock:hover,
   align-content: start;
   gap: 14px;
   min-width: 0;
+}
+
+.mapSelectionBand {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 249, 0.92), rgba(246, 240, 230, 0.88));
 }
 
 .infoValueLink {
@@ -451,24 +468,15 @@ a.detailBlock:hover,
   }
 
   .mapExplorerStage {
-    grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.95fr);
-    grid-template-areas:
-      "map filters"
-      "map details";
+    grid-template-columns: minmax(0, 1.72fr) minmax(300px, 0.88fr);
     align-items: start;
   }
 
   .mapMainColumn {
-    grid-area: map;
+    min-width: 0;
   }
 
   .mapFiltersPanel {
-    grid-area: filters;
-    position: sticky;
-    top: 24px;
-  }
-
-  .mapDetailsPanel {
-    grid-area: details;
+    min-width: 0;
   }
 }
