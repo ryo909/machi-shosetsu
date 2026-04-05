@@ -468,15 +468,18 @@ a.detailBlock:hover,
   }
 
   .mapExplorerStage {
-    grid-template-columns: minmax(0, 1.72fr) minmax(300px, 0.88fr);
+    grid-template-columns: minmax(0, 1.68fr) minmax(280px, 0.92fr);
+    grid-template-areas: "map assist";
     align-items: start;
   }
 
   .mapMainColumn {
+    grid-area: map;
     min-width: 0;
   }
 
   .mapFiltersPanel {
+    grid-area: assist;
     min-width: 0;
   }
 }

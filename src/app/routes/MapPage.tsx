@@ -120,6 +120,48 @@ export function MapPage() {
     prefectureSummaries.length,
     prefecture === "all" ? prefectureSummaries.reduce((sum, item) => sum + item.count, 0) : prefectureSpots.length,
   );
+  const isRegionSelected = region !== "all";
+  const isPrefectureSelected = prefecture !== "all";
+
+  const handleRegionChange = (nextRegion: string) => {
+    const next = new URLSearchParams(searchParams);
+
+    if (nextRegion === "all") {
+      next.delete("region");
+      next.delete("prefecture");
+      setSearchParams(next, { replace: true });
+      return;
+    }
+
+    next.set("region", nextRegion);
+
+    const nextPrefecture = next.get("prefecture");
+    if (
+      nextPrefecture &&
+      !getAvailablePrefectureOptions(nextRegion).some((option) => option.value === nextPrefecture)
+    ) {
+      next.delete("prefecture");
+    }
+
+    setSearchParams(next, { replace: true });
+  };
+
+  const handlePrefectureChange = (nextPrefecture: string) => {
+    const next = new URLSearchParams(searchParams);
+
+    if (nextPrefecture === "all") {
+      next.delete("prefecture");
+      setSearchParams(next, { replace: true });
+      return;
+    }
+
+    const targetOption = prefectureOptions.find((option) => option.value === nextPrefecture);
+    next.set("prefecture", nextPrefecture);
+    if (targetOption?.region) {
+      next.set("region", targetOption.region);
+    }
+    setSearchParams(next, { replace: true });
+  };
 
   return (
     <div className={pageStyles.page}>
@@ -135,118 +177,9 @@ export function MapPage() {
 
       <section className={pageStyles.section}>
         <div className={pageStyles.mapExplorerStage}>
-          <aside className={pageStyles.mapFiltersPanel}>
-            <div className={pageStyles.detailBlock}>
-              <div className={pageStyles.heroRegion}>はじめかた</div>
-              <div className={pageStyles.compactStepRow}>
-                <span>地域を選ぶ</span>
-                <span aria-hidden="true">→</span>
-                <span>県を選ぶ</span>
-                <span aria-hidden="true">→</span>
-                <span>気になるスポットへ</span>
-              </div>
-              <div className={pageStyles.filterStack}>
-                <div>
-                  <div className={pageStyles.filterLabel}>1. 広域地域を選ぶ</div>
-                  <p className={pageStyles.filterHelp}>
-                    気分の近い地域から決めると、地図が見やすくなります。
-                  </p>
-                  <RegionChipGroup
-                    onChange={(nextRegion) => {
-                      const next = new URLSearchParams(searchParams);
-
-                      if (nextRegion === "all") {
-                        next.delete("region");
-                      } else {
-                        next.set("region", nextRegion);
-                      }
-
-                      const nextPrefecture = next.get("prefecture");
-                      if (
-                        nextPrefecture &&
-                        !getAvailablePrefectureOptions(nextRegion).some(
-                          (option) => option.value === nextPrefecture,
-                        )
-                      ) {
-                        next.delete("prefecture");
-                      }
-
-                      setSearchParams(next, { replace: true });
-                    }}
-                    options={regionOptions}
-                    value={region}
-                  />
-                </div>
-                <div>
-                  <div className={pageStyles.filterLabel}>2. 都道府県を選ぶ</div>
-                  <p className={pageStyles.filterHelp}>
-                    県を選ぶと、代表スポットが見え、下で一覧と作品導線が開きます。
-                  </p>
-                  <RegionChipGroup
-                    onChange={(nextPrefecture) => {
-                      const next = new URLSearchParams(searchParams);
-
-                      if (nextPrefecture === "all") {
-                        next.delete("prefecture");
-                        setSearchParams(next, { replace: true });
-                        return;
-                      }
-
-                      const targetOption = prefectureOptions.find(
-                        (option) => option.value === nextPrefecture,
-                      );
-
-                      next.set("prefecture", nextPrefecture);
-                      if (targetOption?.region) {
-                        next.set("region", targetOption.region);
-                      }
-                      setSearchParams(next, { replace: true });
-                    }}
-                    options={prefectureOptions}
-                    value={prefecture}
-                  />
-                </div>
-                <div className={pageStyles.selectionSummary}>
-                  <div className={pageStyles.summaryPill}>
-                    地域: {region === "all" ? "未選択" : broadRegionLabels[region as keyof typeof broadRegionLabels]}
-                  </div>
-                  <div className={pageStyles.summaryPill}>
-                    都道府県: {selectedPrefectureOption?.label ?? "未選択"}
-                  </div>
-                  <div className={pageStyles.summaryPill}>
-                    代表表示: {representativeSpots.length}件
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {selectedSpot && selectedRepresentativeWork ? (
-              <div>
-                <SectionHeading title="代表スポット" meta="ここから入る" />
-                <SelectedSpotPreviewCard
-                  representativeWorkTitle={selectedRepresentativeWork.title}
-                  spot={selectedSpot}
-                />
-              </div>
-            ) : (
-              <EmptyState message="まずは地域と都道府県を選んでください。代表スポットはここに軽く表示されます。" />
-            )}
-          </aside>
-
           <div className={pageStyles.mapMainColumn}>
             <JapanMapCard
-              onSelectPrefecture={(prefectureKey) => {
-                const next = new URLSearchParams(searchParams);
-                const targetOption = prefectureOptions.find(
-                  (option) => option.value === prefectureKey,
-                );
-
-                next.set("prefecture", prefectureKey);
-                if (targetOption?.region) {
-                  next.set("region", targetOption.region);
-                }
-                setSearchParams(next, { replace: true });
-              }}
+              onSelectPrefecture={handlePrefectureChange}
               onSelectSpot={setSelectedSpotId}
               prefectures={prefectureSummaries}
               representativeSpots={representativeSpots}
@@ -255,70 +188,200 @@ export function MapPage() {
               selectedSpotId={selectedSpotId}
             />
           </div>
+
+          <aside className={pageStyles.mapFiltersPanel}>
+            {!isRegionSelected ? (
+              <div className={pageStyles.detailBlock}>
+                <div className={pageStyles.heroRegion}>地域から入る</div>
+                <h2 className={pageStyles.spotTitle}>まずどの地域から見ますか</h2>
+                <p className={pageStyles.heroDescription}>
+                  地図の気配を見ながら、最初の地域だけを決める画面です。地域を選ぶと、次に都道府県と代表スポットが静かに現れます。
+                </p>
+                <div className={pageStyles.filterStack}>
+                  <div>
+                    <div className={pageStyles.filterLabel}>地域を選ぶ</div>
+                    <RegionChipGroup
+                      onChange={handleRegionChange}
+                      options={regionOptions}
+                      value={region}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : !isPrefectureSelected ? (
+              <div className={pageStyles.detailBlock}>
+                <div className={pageStyles.heroRegion}>
+                  {broadRegionLabels[region as keyof typeof broadRegionLabels]}
+                </div>
+                <div className={pageStyles.compactStepRow}>
+                  <span>地域を選んだら</span>
+                  <span aria-hidden="true">→</span>
+                  <span>次は県を選ぶ</span>
+                </div>
+                <p className={pageStyles.heroDescription}>
+                  この地域でスポットがある県だけを表示しています。次は気になる県をひとつ選んでください。
+                </p>
+                <div className={pageStyles.filterStack}>
+                  <div>
+                    <div className={pageStyles.filterLabel}>地域を選び直す</div>
+                    <RegionChipGroup
+                      onChange={handleRegionChange}
+                      options={regionOptions}
+                      value={region}
+                    />
+                  </div>
+                  <div>
+                    <div className={pageStyles.filterLabel}>都道府県を選ぶ</div>
+                    <RegionChipGroup
+                      onChange={handlePrefectureChange}
+                      options={prefectureOptions}
+                      value={prefecture}
+                    />
+                  </div>
+                </div>
+                <div className={pageStyles.selectionSummary}>
+                  <div className={pageStyles.summaryPill}>
+                    県候補: {Math.max(prefectureOptions.length - 1, 0)}件
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className={pageStyles.stack}>
+                <div className={pageStyles.detailBlock}>
+                  <div className={pageStyles.heroRegion}>
+                    {selectedPrefectureOption?.label}
+                  </div>
+                  <div className={pageStyles.compactStepRow}>
+                    <span>地域</span>
+                    <span aria-hidden="true">→</span>
+                    <span>県</span>
+                    <span aria-hidden="true">→</span>
+                    <span>代表スポット</span>
+                  </div>
+                  <div className={pageStyles.filterStack}>
+                    <div>
+                      <div className={pageStyles.filterLabel}>地域を見直す</div>
+                      <RegionChipGroup
+                        onChange={handleRegionChange}
+                        options={regionOptions}
+                        value={region}
+                      />
+                    </div>
+                    <div>
+                      <div className={pageStyles.filterLabel}>都道府県を見直す</div>
+                      <RegionChipGroup
+                        onChange={handlePrefectureChange}
+                        options={prefectureOptions}
+                        value={prefecture}
+                      />
+                    </div>
+                  </div>
+                  <div className={pageStyles.selectionSummary}>
+                    <div className={pageStyles.summaryPill}>
+                      スポット: {prefectureSpots.length}件
+                    </div>
+                    <div className={pageStyles.summaryPill}>
+                      代表表示: {representativeSpots.length}件
+                    </div>
+                  </div>
+                </div>
+
+                {selectedSpot && selectedRepresentativeWork ? (
+                  <div>
+                    <SectionHeading title="代表スポット" meta="ここから入る" />
+                    <SelectedSpotPreviewCard
+                      representativeWorkTitle={selectedRepresentativeWork.title}
+                      spot={selectedSpot}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            )}
+          </aside>
         </div>
       </section>
 
-      <section className={pageStyles.section}>
-        <div className={`${pageStyles.detailBlock} ${pageStyles.mapSelectionBand}`}>
-          <div className={pageStyles.heroRegion}>
-            {selectedPrefectureOption?.label ?? "全国から探す"}
+      {!isRegionSelected ? (
+        <section className={pageStyles.section}>
+          <EmptyState message="地域を選ぶと、ここに都道府県ごとの入口とスポット一覧が表示されます。まずは地図の右側で気になる地域をひとつ選んでください。" />
+        </section>
+      ) : !isPrefectureSelected ? (
+        <section className={pageStyles.section}>
+          <div className={`${pageStyles.detailBlock} ${pageStyles.mapSelectionBand}`}>
+            <div className={pageStyles.heroRegion}>
+              {broadRegionLabels[region as keyof typeof broadRegionLabels]}
+            </div>
+            <h2 className={pageStyles.spotTitle}>次は都道府県を選ぶ</h2>
+            <p className={pageStyles.heroDescription}>{summaryText}</p>
+            <div className={pageStyles.selectionSummary}>
+              <div className={pageStyles.summaryPill}>
+                地域: {broadRegionLabels[region as keyof typeof broadRegionLabels]}
+              </div>
+              <div className={pageStyles.summaryPill}>
+                県候補: {Math.max(prefectureOptions.length - 1, 0)}件
+              </div>
+            </div>
           </div>
-          <h2 className={pageStyles.spotTitle}>
-            {selectedPrefectureOption
-              ? `${selectedPrefectureOption.label}の文学スポット`
-              : "地域から都道府県を選ぶ"}
-          </h2>
-          <p className={pageStyles.heroDescription}>{summaryText}</p>
-          <div className={pageStyles.selectionSummary}>
-            <div className={pageStyles.summaryPill}>
-              地域: {region === "all" ? "未選択" : broadRegionLabels[region as keyof typeof broadRegionLabels]}
+        </section>
+      ) : (
+        <>
+          <section className={pageStyles.section}>
+            <div className={`${pageStyles.detailBlock} ${pageStyles.mapSelectionBand}`}>
+              <div className={pageStyles.heroRegion}>
+                {selectedPrefectureOption?.label ?? "全国から探す"}
+              </div>
+              <h2 className={pageStyles.spotTitle}>
+                {selectedPrefectureOption
+                  ? `${selectedPrefectureOption.label}の文学スポット`
+                  : "地域から都道府県を選ぶ"}
+              </h2>
+              <p className={pageStyles.heroDescription}>{summaryText}</p>
+              <div className={pageStyles.selectionSummary}>
+                <div className={pageStyles.summaryPill}>
+                  地域: {broadRegionLabels[region as keyof typeof broadRegionLabels]}
+                </div>
+                <div className={pageStyles.summaryPill}>
+                  都道府県: {selectedPrefectureOption?.label ?? "未選択"}
+                </div>
+                <div className={pageStyles.summaryPill}>
+                  スポット: {prefectureSpots.length}件
+                </div>
+              </div>
             </div>
-            <div className={pageStyles.summaryPill}>
-              都道府県: {selectedPrefectureOption?.label ?? "未選択"}
-            </div>
-            <div className={pageStyles.summaryPill}>
-              スポット: {prefecture === "all" ? 0 : prefectureSpots.length}件
-            </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      <section className={pageStyles.section}>
-        {prefecture !== "all" ? (
-          <div>
+          <section className={pageStyles.section}>
             <SectionHeading title="この県のスポット一覧" meta={`${prefectureSpots.length}件`} />
             <MapSpotMiniList
               onSelect={setSelectedSpotId}
               selectedSpotId={selectedSpotId}
               spots={miniListItems}
             />
-          </div>
-        ) : (
-          <EmptyState message="県を選ぶと、その県のスポット一覧がここに並びます。まずは地図の右側で地域と都道府県を選んでください。" />
-        )}
-      </section>
+          </section>
 
-      {relatedWorks.length > 0 ? (
-        <section className={pageStyles.section}>
-          <SectionHeading title="この県から読みはじめる" meta="作品への入口" />
-          <div className={pageStyles.listGrid}>
-            {relatedWorks.map(({ spot, work }) => (
-              <Link
-                className={pageStyles.detailBlock}
-                key={`${spot.spot_id}-${work.work_id}`}
-                to={`/works/${work.slug}`}
-              >
-                <div className={pageStyles.heroRegion}>{spot.display_name}</div>
-                <h3 className={pageStyles.spotTitle}>{work.title}</h3>
-                <p className={pageStyles.heroDescription}>
-                  {work.heroCopy ?? work.summary_short}
-                </p>
-                <div className={pageStyles.infoLabel}>{work.author}</div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      ) : null}
+          {relatedWorks.length > 0 ? (
+            <section className={pageStyles.section}>
+              <SectionHeading title="この県から読みはじめる" meta="作品への入口" />
+              <div className={pageStyles.listGrid}>
+                {relatedWorks.map(({ spot, work }) => (
+                  <Link
+                    className={pageStyles.detailBlock}
+                    key={`${spot.spot_id}-${work.work_id}`}
+                    to={`/works/${work.slug}`}
+                  >
+                    <div className={pageStyles.heroRegion}>{spot.display_name}</div>
+                    <h3 className={pageStyles.spotTitle}>{work.title}</h3>
+                    <p className={pageStyles.heroDescription}>
+                      {work.heroCopy ?? work.summary_short}
+                    </p>
+                    <div className={pageStyles.infoLabel}>{work.author}</div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
