@@ -58,21 +58,41 @@ export function WorkDetailPage() {
             : []),
           { label: work.title },
         ]}
-        eyebrow="作品詳細"
+        eyebrow="作品案内"
         title={work.title}
       />
 
-      <section className={pageStyles.heroPanel}>
+      <section className={`${pageStyles.heroPanel} ${pageStyles.heroPanelWork}`}>
+        <div className={`${pageStyles.pageKind} ${pageStyles.pageKindWork}`}>作品案内</div>
         <div className={pageStyles.heroRegion}>{work.author}</div>
-        <h2 className={pageStyles.heroTitle}>{work.summary_short}</h2>
-        <p className={pageStyles.heroDescription}>
-          {work.era_label} / {work.year_label}
-        </p>
+        <h2 className={pageStyles.heroTitle}>{work.title}</h2>
+        <div className={pageStyles.heroMetaRow}>
+          <div className={pageStyles.heroMetaPill}>{work.era_label}</div>
+          <div className={pageStyles.heroMetaPill}>{work.year_label}</div>
+          <div className={pageStyles.heroMetaPill}>{work.format === "series" ? "シリーズ" : "長編小説"}</div>
+        </div>
+        <p className={pageStyles.heroLead}>{work.summary_short}</p>
+      </section>
+
+      <section className={pageStyles.section}>
+        <SectionHeading title="この作品について" meta="作品を起点に読む" />
+        <article className={pageStyles.detailBlock}>
+          <div className={pageStyles.infoList}>
+            <div className={pageStyles.infoItem}>
+              <div className={pageStyles.infoLabel}>作者</div>
+              <div className={pageStyles.infoValue}>{work.author}</div>
+            </div>
+            <div className={pageStyles.infoItem}>
+              <div className={pageStyles.infoLabel}>作品の印象</div>
+              <div className={pageStyles.infoValue}>{work.summary_short}</div>
+            </div>
+          </div>
+        </article>
       </section>
 
       {activePair ? (
         <section className={pageStyles.section}>
-          <SectionHeading title="この場所との関係" />
+          <SectionHeading title="この場所との関係" meta="作品から土地を見る鍵" />
           <article className={pageStyles.detailBlock}>
             <div className={pageStyles.infoList}>
               <div className={pageStyles.infoItem}>
@@ -99,7 +119,7 @@ export function WorkDetailPage() {
       ) : null}
 
       <section className={pageStyles.section}>
-        <SectionHeading title="こんな人に" />
+        <SectionHeading title="こんな人に" meta="作品から歩きたくなる読者へ" />
         <div className={pageStyles.stack}>
           {audienceCopy.map((text) => (
             <article className={pageStyles.detailBlock} key={text}>
@@ -110,7 +130,7 @@ export function WorkDetailPage() {
       </section>
 
       <section className={pageStyles.section}>
-        <SectionHeading title="関連する場所" meta={`${spotPairs.length}スポット`} />
+        <SectionHeading title="舞台になった場所" meta={`${spotPairs.length}スポット`} />
         <div className={pageStyles.subGrid}>
           {spotPairs.map((pair) => (
             <Link className={pageStyles.detailBlock} key={pair.relation.relation_id} to={`/spots/${pair.spot.slug}`}>
@@ -130,7 +150,7 @@ export function WorkDetailPage() {
           </Link>
           {activePair ? (
             <Link className="pillLink" to={`/spots/${activePair.spot.slug}`}>
-              この場所へ戻る
+              舞台を見る
             </Link>
           ) : null}
           <Link className="pillLink secondary" to="/saved">

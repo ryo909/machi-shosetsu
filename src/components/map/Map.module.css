@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 20px 0;
+  padding: 14px 16px 0;
 }
 
 .mapCompass {
@@ -42,7 +42,8 @@
 .mapFrame {
   position: relative;
   aspect-ratio: 1305 / 720;
-  margin: 8px 16px 16px;
+  min-height: 286px;
+  margin: 6px 10px 10px;
   border-radius: calc(var(--radius) - 6px);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 22%),
@@ -253,6 +254,11 @@
 }
 
 @media (min-width: 1024px) {
+  .mapFrame {
+    min-height: 460px;
+    margin: 6px 12px 12px;
+  }
+
   .pin {
     width: 36px;
     height: 36px;

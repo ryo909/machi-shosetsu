@@ -63,6 +63,19 @@
   overflow: hidden;
 }
 
+.heroPanelSpot {
+  background:
+    radial-gradient(ellipse at 84% 16%, rgba(179, 138, 87, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(246, 240, 230, 0.94));
+}
+
+.heroPanelWork {
+  background:
+    radial-gradient(ellipse at 18% 14%, rgba(93, 118, 136, 0.11), transparent 44%),
+    radial-gradient(ellipse at 86% 84%, rgba(169, 123, 108, 0.08), transparent 36%),
+    linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(247, 242, 236, 0.95));
+}
+
 .heroPanel::before {
   content: "";
   position: absolute;
@@ -71,6 +84,56 @@
   right: 24px;
   height: 2px;
   background: linear-gradient(90deg, transparent, rgba(179, 138, 87, 0.4), transparent);
+}
+
+.pageKind {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(93, 118, 136, 0.1);
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.pageKindSpot {
+  background: rgba(179, 138, 87, 0.12);
+  color: var(--accent-2);
+}
+
+.pageKindWork {
+  background: rgba(93, 118, 136, 0.1);
+  color: var(--accent);
+}
+
+.heroMetaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.heroMetaPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(221, 208, 194, 0.9);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.8);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.heroLead {
+  margin: 18px 0 0;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.95;
 }
 
 .heroRegion {
@@ -201,7 +264,7 @@ a.detailBlock:hover,
 
 @media (min-width: 1024px) {
   .mapStage {
-    grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr);
+    grid-template-columns: minmax(0, 2.35fr) minmax(280px, 1fr);
     align-items: start;
   }
 

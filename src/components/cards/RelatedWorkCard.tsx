@@ -8,9 +8,15 @@ type RelatedWorkCardProps = {
   work: Work;
   relation: Relation;
   spotSlug?: string;
+  ctaLabel?: string;
 };
 
-export function RelatedWorkCard({ work, relation, spotSlug }: RelatedWorkCardProps) {
+export function RelatedWorkCard({
+  work,
+  relation,
+  spotSlug,
+  ctaLabel = "読みどころを見る",
+}: RelatedWorkCardProps) {
   const to = spotSlug ? `/works/${work.slug}?spot=${spotSlug}` : `/works/${work.slug}`;
 
   return (
@@ -22,7 +28,7 @@ export function RelatedWorkCard({ work, relation, spotSlug }: RelatedWorkCardPro
       </div>
       <p className={styles.copy}>{relation.card_copy}</p>
       <Link className={styles.cta} to={to}>
-        読みどころを見る
+        {ctaLabel}
       </Link>
     </article>
   );

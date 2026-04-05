@@ -8,9 +8,15 @@ type AnchorWorkCardProps = {
   work: Work;
   relation: Relation;
   spotSlug: string;
+  ctaLabel?: string;
 };
 
-export function AnchorWorkCard({ work, relation, spotSlug }: AnchorWorkCardProps) {
+export function AnchorWorkCard({
+  work,
+  relation,
+  spotSlug,
+  ctaLabel = "作品詳細へ",
+}: AnchorWorkCardProps) {
   return (
     <article className={`${styles.card} ${styles.anchorCard}`}>
       <div className={styles.eyebrow}>
@@ -25,7 +31,7 @@ export function AnchorWorkCard({ work, relation, spotSlug }: AnchorWorkCardProps
       <p className={styles.copy}>{relation.card_copy}</p>
       <p className={styles.intro}>{relation.detail_intro}</p>
       <Link className={styles.cta} to={`/works/${work.slug}?spot=${spotSlug}`}>
-        作品詳細へ
+        {ctaLabel}
       </Link>
     </article>
   );

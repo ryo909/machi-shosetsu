@@ -41,47 +41,39 @@ export function SpotDetailPage() {
           { label: "スポット一覧", to: "/spots" },
           { label: spot.display_name },
         ]}
-        eyebrow={spot.parent_area}
+        eyebrow="文学スポット"
         title={spot.display_name}
       />
 
-      <section className={pageStyles.heroPanel}>
+      <section className={`${pageStyles.heroPanel} ${pageStyles.heroPanelSpot}`}>
+        <div className={`${pageStyles.pageKind} ${pageStyles.pageKindSpot}`}>文学スポット</div>
         <div className={pageStyles.heroRegion}>{spot.parent_area}</div>
         <h2 className={pageStyles.heroTitle}>{spot.list_copy}</h2>
-        <p className={pageStyles.heroDescription}>{spot.description}</p>
+        <div className={pageStyles.heroMetaRow}>
+          <div className={pageStyles.heroMetaPill}>{spot.category}</div>
+          <div className={pageStyles.heroMetaPill}>{spot.city}</div>
+        </div>
+        <p className={pageStyles.heroLead}>{spot.description}</p>
       </section>
 
       <section className={pageStyles.section}>
-        <SectionHeading title="まずはこの一冊" />
-        {anchorPair ? (
-          <AnchorWorkCard
-            relation={anchorPair.relation}
-            spotSlug={spot.slug}
-            work={anchorPair.work}
-          />
-        ) : null}
-      </section>
-
-      <section className={pageStyles.section}>
-        <SectionHeading title="関連作品" meta={`${workPairs.length}作品`} />
-        {relatedPairs.length > 0 ? (
-          <div className={pageStyles.stack}>
-            {relatedPairs.map((pair) => (
-              <RelatedWorkCard
-                key={pair.relation.relation_id}
-                relation={pair.relation}
-                spotSlug={spot.slug}
-                work={pair.work}
-              />
-            ))}
+        <SectionHeading title="この場所について" meta="空気ごと読書の入口にする" />
+        <article className={pageStyles.detailBlock}>
+          <div className={pageStyles.infoList}>
+            <div className={pageStyles.infoItem}>
+              <div className={pageStyles.infoLabel}>場所の魅力</div>
+              <div className={pageStyles.infoValue}>{spot.description}</div>
+            </div>
+            <div className={pageStyles.infoItem}>
+              <div className={pageStyles.infoLabel}>まず感じたいこと</div>
+              <div className={pageStyles.infoValue}>{spot.list_copy}</div>
+            </div>
           </div>
-        ) : (
-          <EmptyState message="このスポットでは、まずはこの一冊から読むのがおすすめです。" />
-        )}
+        </article>
       </section>
 
       <section className={pageStyles.section}>
-        <SectionHeading title="この場所で読むと面白い理由" />
+        <SectionHeading title="この場所と物語" meta="現地で読む理由を先に知る" />
         <div className={pageStyles.stack}>
           {whyHereItems.map((item) => (
             <article className={pageStyles.detailBlock} key={item.relation_id}>
@@ -100,6 +92,37 @@ export function SpotDetailPage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className={pageStyles.section}>
+        <SectionHeading title="まずはこの一冊" meta="場所から作品へ入る" />
+        {anchorPair ? (
+          <AnchorWorkCard
+            ctaLabel="この作品を見る"
+            relation={anchorPair.relation}
+            spotSlug={spot.slug}
+            work={anchorPair.work}
+          />
+        ) : null}
+      </section>
+
+      <section className={pageStyles.section}>
+        <SectionHeading title="この場所でもう少し読む" meta={`${workPairs.length}作品`} />
+        {relatedPairs.length > 0 ? (
+          <div className={pageStyles.stack}>
+            {relatedPairs.map((pair) => (
+              <RelatedWorkCard
+                ctaLabel="作品案内を見る"
+                key={pair.relation.relation_id}
+                relation={pair.relation}
+                spotSlug={spot.slug}
+                work={pair.work}
+              />
+            ))}
+          </div>
+        ) : (
+          <EmptyState message="このスポットでは、まずはこの一冊から読むのがおすすめです。" />
+        )}
       </section>
 
       <section className={pageStyles.section}>
