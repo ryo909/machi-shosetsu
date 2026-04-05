@@ -40,21 +40,21 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(93, 118, 136, 0.1);
-  color: var(--accent);
-  font-size: 0.74rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  padding: 0 0 10px;
+  border-bottom: 1px solid rgba(179, 138, 87, 0.28);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .heroTitle {
   position: relative;
   z-index: 1;
-  margin: 18px 0 0;
+  margin: 20px 0 0;
   font-family: var(--font-serif);
-  font-size: clamp(2.4rem, 9vw, 4rem);
+  font-size: clamp(2.45rem, 9vw, 4.05rem);
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.03em;
@@ -64,11 +64,11 @@
 .heroText {
   position: relative;
   z-index: 1;
-  margin: 16px 0 0;
-  max-width: 34ch;
+  margin: 18px 0 0;
+  max-width: 38ch;
   color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.85;
+  font-size: 0.98rem;
+  line-height: 1.9;
 }
 
 .heroOrnament {
@@ -294,11 +294,16 @@
     padding: 36px 34px 34px;
   }
 
+  .heroEyebrow {
+    font-size: 1.08rem;
+    padding-bottom: 12px;
+  }
+
   .heroTitle {
-    font-size: clamp(2.6rem, 4.4vw, 4.15rem);
+    font-size: clamp(2.75rem, 4.4vw, 4.2rem);
   }
 
   .heroText {
-    max-width: 40ch;
+    max-width: 42ch;
   }
 }
