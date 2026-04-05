@@ -33,11 +33,13 @@ type RegionCalibration = {
   east: string;
 };
 
-export type SpotMapSource = "latlng" | "fallback" | "missing";
+export type SpotMapSource = "display" | "latlng" | "fallback" | "missing";
 
 export type SpotMapLayout = {
   spot: Spot;
   source: SpotMapSource;
+  projectedRatio: MapPoint | null;
+  projectedPx: MapPoint | null;
   baseRatio: MapPoint | null;
   basePx: MapPoint | null;
   displayPx: MapPoint | null;
@@ -158,6 +160,10 @@ function toRatioOffset(value?: number | null) {
   return value ? value / 100 : 0;
 }
 
+function roundRatio(value: number) {
+  return Math.round(value * 10000) / 10000;
+}
+
 function getRegionForLatLng(lat: number, lng: number): MapRegionKey {
   if (lat >= 41.2) {
     return "hokkaido";
@@ -263,6 +269,9 @@ export function projectLatLngToMapPoint(lat: number, lng: number): MapPoint {
 }
 
 export function getSpotMapSource(spot: Spot): SpotMapSource {
+  if (spot.display_x !== null && spot.display_x !== undefined && spot.display_y !== null && spot.display_y !== undefined) {
+    return "display";
+  }
   if (spot.lat !== null && spot.lng !== null) {
     return "latlng";
   }
@@ -272,30 +281,67 @@ export function getSpotMapSource(spot: Spot): SpotMapSource {
   return "missing";
 }
 
-export function getSpotBaseMapPoint(spot: Spot): { point: MapPoint | null; source: SpotMapSource } {
-  const source = getSpotMapSource(spot);
-
-  if (source === "latlng") {
-    return { point: projectLatLngToMapPoint(spot.lat as number, spot.lng as number), source };
+export function getProjectedMapPoint(spot: Spot): MapPoint | null {
+  if (spot.lat === null || spot.lng === null) {
+    return null;
   }
 
-  if (source === "fallback") {
+  return projectLatLngToMapPoint(spot.lat, spot.lng);
+}
+
+export function getSpotBaseMapPoint(
+  spot: Spot,
+  overrideDisplay?: MapPoint | null,
+): {
+  point: MapPoint | null;
+  projectedPoint: MapPoint | null;
+  source: SpotMapSource;
+} {
+  const projectedPoint = getProjectedMapPoint(spot);
+  const overridePoint = overrideDisplay
+    ? {
+        x: roundRatio(overrideDisplay.x),
+        y: roundRatio(overrideDisplay.y),
+      }
+    : null;
+
+  if (overridePoint) {
+    return { point: overridePoint, projectedPoint, source: "display" };
+  }
+
+  if (spot.display_x !== null && spot.display_x !== undefined && spot.display_y !== null && spot.display_y !== undefined) {
+    return {
+      point: {
+        x: spot.display_x,
+        y: spot.display_y,
+      },
+      projectedPoint,
+      source: "display",
+    };
+  }
+
+  if (projectedPoint) {
+    return { point: projectedPoint, projectedPoint, source: "latlng" };
+  }
+
+  if (spot.map_x !== null && spot.map_y !== null) {
     return {
       point: {
         x: (spot.map_x as number) / 100,
         y: (spot.map_y as number) / 100,
       },
-      source,
+      projectedPoint: null,
+      source: "fallback",
     };
   }
 
-  return { point: null, source };
+  return { point: null, projectedPoint: null, source: "missing" };
 }
 
 function getPairMinDistancePx(a: SpotMapLayout, b: SpotMapLayout) {
-  const aCrowded = a.source === "latlng";
-  const bCrowded = b.source === "latlng";
-  return aCrowded || bCrowded ? 24 : 20;
+  const aCrowded = a.source !== "fallback";
+  const bCrowded = b.source !== "fallback";
+  return aCrowded || bCrowded ? 18 : 15;
 }
 
 function clampDisplacement(base: MapPoint, current: MapPoint, maxDistance: number) {
@@ -325,15 +371,23 @@ export function buildSpotMapLayout(
   spots: Spot[],
   size: { width: number; height: number },
   selectedSpotId?: string | null,
+  calibrationOverride?: { spotId: string; point: MapPoint } | null,
 ): SpotMapLayout[] {
   const initial = spots
     .map((spot) => {
-      const { point, source } = getSpotBaseMapPoint(spot);
+      const { point, projectedPoint, source } = getSpotBaseMapPoint(
+        spot,
+        calibrationOverride?.spotId === spot.spot_id ? calibrationOverride.point : null,
+      );
 
       if (!point) {
         return {
           spot,
           source,
+          projectedRatio: projectedPoint,
+          projectedPx: projectedPoint
+            ? { x: projectedPoint.x * size.width, y: projectedPoint.y * size.height }
+            : null,
           baseRatio: null,
           basePx: null,
           displayPx: null,
@@ -351,6 +405,10 @@ export function buildSpotMapLayout(
       return {
         spot,
         source,
+        projectedRatio: projectedPoint,
+        projectedPx: projectedPoint
+          ? { x: projectedPoint.x * size.width, y: projectedPoint.y * size.height }
+          : null,
         baseRatio: point,
         basePx,
         displayPx: { ...basePx },
@@ -392,24 +450,45 @@ export function buildSpotMapLayout(
         const overlap = minDistance - distance;
         const nx = dx / distance;
         const ny = dy / distance;
-        const aWeight = a.spot.spot_id === selectedSpotId ? 0.35 : 0.5;
-        const bWeight = b.spot.spot_id === selectedSpotId ? 0.35 : 0.5;
+        const aSelected = a.spot.spot_id === selectedSpotId;
+        const bSelected = b.spot.spot_id === selectedSpotId;
 
-        a.displayPx = {
-          x: a.displayPx.x - nx * overlap * aWeight,
-          y: a.displayPx.y - ny * overlap * aWeight,
-        };
-        b.displayPx = {
-          x: b.displayPx.x + nx * overlap * bWeight,
-          y: b.displayPx.y + ny * overlap * bWeight,
-        };
+        if (aSelected && bSelected) {
+          continue;
+        }
+
+        if (aSelected) {
+          b.displayPx = {
+            x: b.displayPx.x + nx * overlap * 0.45,
+            y: b.displayPx.y + ny * overlap * 0.45,
+          };
+        } else if (bSelected) {
+          a.displayPx = {
+            x: a.displayPx.x - nx * overlap * 0.45,
+            y: a.displayPx.y - ny * overlap * 0.45,
+          };
+        } else {
+          a.displayPx = {
+            x: a.displayPx.x - nx * overlap * 0.3,
+            y: a.displayPx.y - ny * overlap * 0.3,
+          };
+          b.displayPx = {
+            x: b.displayPx.x + nx * overlap * 0.3,
+            y: b.displayPx.y + ny * overlap * 0.3,
+          };
+        }
         moved = true;
       }
     }
 
     movable.forEach((item) => {
-      const relax = item.spot.spot_id === selectedSpotId ? 0.2 : 0.14;
-      const maxDistance = item.spot.spot_id === selectedSpotId ? 26 : 20;
+      if (item.spot.spot_id === selectedSpotId) {
+        item.displayPx = { ...item.basePx };
+        return;
+      }
+
+      const relax = 0.2;
+      const maxDistance = 10;
 
       item.displayPx = {
         x: item.displayPx.x + (item.basePx.x - item.displayPx.x) * relax,
@@ -431,6 +510,8 @@ export function buildSpotMapLayout(
       return {
         spot,
         source,
+        projectedRatio: null,
+        projectedPx: null,
         baseRatio: null,
         basePx: null,
         displayPx: null,
@@ -441,7 +522,7 @@ export function buildSpotMapLayout(
     }
 
     // Order matters for maintenance:
-    // 1. lat/lng or fallback gives the base position
+    // 1. display_x/display_y or projected fallback gives the base position
     // 2. collision handling adjusts only the display position
     // 3. fine_dx / fine_dy are applied last as a small manual nudge
     const displayPx = clampPointToImage(
@@ -476,4 +557,12 @@ export function clampSelection<T>(items: T[], currentIndex: number) {
     return null;
   }
   return items[Math.max(0, Math.min(currentIndex, items.length - 1))];
+}
+
+export function formatDisplayPatch(spot: Spot, point: MapPoint) {
+  return `{
+  slug: "${spot.slug}",
+  display_x: ${roundRatio(point.x)},
+  display_y: ${roundRatio(point.y)},
+}`;
 }

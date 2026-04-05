@@ -49,6 +49,10 @@ export function getAvailableRegionOptions() {
 export function getMapSpots(region?: RegionKey | string | null): PublishedSpot[] {
   return getPublishedSpots(region).filter(
     (spot) =>
+      (spot.display_x !== null &&
+        spot.display_x !== undefined &&
+        spot.display_y !== null &&
+        spot.display_y !== undefined) ||
       (spot.lat !== null && spot.lng !== null) ||
       (spot.map_x !== null && spot.map_y !== null),
   );

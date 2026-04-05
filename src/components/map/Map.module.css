@@ -59,6 +59,10 @@
   min-width: 0;
 }
 
+.mapImageBoxCalibrate {
+  cursor: crosshair;
+}
+
 .mapImage {
   display: block;
   width: 100%;
@@ -103,6 +107,10 @@
   fill: rgba(169, 68, 68, 0.92);
 }
 
+.debugProjectedDot {
+  fill: rgba(93, 118, 136, 0.9);
+}
+
 .debugLabel {
   position: absolute;
   display: grid;
@@ -141,6 +149,131 @@
 .debugPanelMeta {
   color: var(--muted);
   font-size: 0.8rem;
+}
+
+.calibrationPanel {
+  display: grid;
+  gap: 12px;
+  padding: 0 14px 14px;
+}
+
+.calibrationTitle {
+  color: var(--accent-2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.calibrationMeta {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.calibrationMeta strong {
+  color: var(--ink);
+  font-size: 0.96rem;
+}
+
+.calibrationGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.calibrationItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(221, 208, 194, 0.8);
+  border-radius: 12px;
+  background: rgba(255, 253, 249, 0.88);
+  color: var(--ink);
+  font-size: 0.82rem;
+}
+
+.calibrationLabel {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.calibrationControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.calibrationButton,
+.calibrationButtonSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid rgba(221, 208, 194, 0.85);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.94);
+  color: var(--ink);
+  font-size: 0.84rem;
+  font-weight: 700;
+  transition: border-color var(--transition-base), transform var(--transition-base);
+}
+
+.calibrationButton:hover,
+.calibrationButtonSecondary:hover {
+  transform: translateY(-1px);
+  border-color: rgba(179, 138, 87, 0.35);
+}
+
+.calibrationButtonSecondary {
+  color: var(--accent);
+}
+
+.calibrationOutput {
+  width: 100%;
+  min-height: 94px;
+  padding: 12px 14px;
+  border: 1px solid rgba(221, 208, 194, 0.88);
+  border-radius: 16px;
+  background: rgba(255, 253, 249, 0.96);
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.calibrationCrosshair {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.crosshairHorizontal,
+.crosshairVertical {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: rgba(179, 138, 87, 0.95);
+  box-shadow: 0 0 0 1px rgba(255, 253, 249, 0.8);
+}
+
+.crosshairHorizontal {
+  width: 36px;
+  height: 1.5px;
+  transform: translate(-50%, -50%);
+}
+
+.crosshairVertical {
+  width: 1.5px;
+  height: 36px;
+  transform: translate(-50%, -50%);
 }
 
 .pin {

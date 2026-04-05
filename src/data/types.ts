@@ -9,6 +9,8 @@ export type Spot = {
   category: string;
   lat: number | null;
   lng: number | null;
+  display_x?: number | null;
+  display_y?: number | null;
   map_x: number | null;
   map_y: number | null;
   fine_dx?: number | null;
