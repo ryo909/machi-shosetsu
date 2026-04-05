@@ -18,6 +18,10 @@ export type Spot = {
   region_key: string;
   priority: number;
   status: "draft" | "published";
+  heroCopy?: string;
+  placeIntro?: string;
+  readingEntry?: string;
+  firstBookReason?: string;
   list_copy: string;
   description: string;
   tags: string[];
@@ -40,6 +44,10 @@ export type Work = {
     kindle: string | null;
   };
   cover_image_url: string | null;
+  heroCopy?: string;
+  workIntro?: string;
+  readingPoint?: string;
+  placeRelationNote?: string;
   status: "draft" | "published";
 };
 

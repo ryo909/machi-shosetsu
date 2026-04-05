@@ -8,7 +8,6 @@ import { SectionHeading } from "../../components/common/SectionHeading";
 import { Header } from "../../components/layout/Header";
 import {
   getRelatedSpotsForSpot,
-  getRelationsForSpot,
   getSpotBySlug,
   getSpotWorkPairs,
 } from "../../lib/selectors";
@@ -28,7 +27,14 @@ export function SpotDetailPage() {
   const anchorPair = workPairs.find((pair) => pair.relation.is_anchor) ?? workPairs[0];
   const relatedPairs = workPairs.filter((pair) => pair.relation.relation_id !== anchorPair?.relation.relation_id);
   const relatedSpots = getRelatedSpotsForSpot(spot);
-  const whyHereItems = getRelationsForSpot(spot.spot_id).slice(0, 2);
+  const heroCopy = spot.heroCopy ?? spot.list_copy;
+  const placeIntro = spot.placeIntro ?? spot.description;
+  const readingEntry = spot.readingEntry ?? anchorPair?.relation.detail_intro ?? spot.list_copy;
+  const firstBookReason =
+    spot.firstBookReason ??
+    anchorPair?.relation.why_here ??
+    anchorPair?.relation.card_copy ??
+    "この場所の空気から、そのまま作品へ入りやすい一冊です。";
 
   return (
     <div className={pageStyles.page}>
@@ -48,12 +54,12 @@ export function SpotDetailPage() {
       <section className={`${pageStyles.heroPanel} ${pageStyles.heroPanelSpot}`}>
         <div className={`${pageStyles.pageKind} ${pageStyles.pageKindSpot}`}>文学スポット</div>
         <div className={pageStyles.heroRegion}>{spot.parent_area}</div>
-        <h2 className={pageStyles.heroTitle}>{spot.list_copy}</h2>
+        <h2 className={pageStyles.heroTitle}>{spot.display_name}</h2>
         <div className={pageStyles.heroMetaRow}>
           <div className={pageStyles.heroMetaPill}>{spot.category}</div>
           <div className={pageStyles.heroMetaPill}>{spot.city}</div>
         </div>
-        <p className={pageStyles.heroLead}>{spot.description}</p>
+        <p className={pageStyles.heroLead}>{heroCopy}</p>
       </section>
 
       <section className={pageStyles.section}>
@@ -62,40 +68,34 @@ export function SpotDetailPage() {
           <div className={pageStyles.infoList}>
             <div className={pageStyles.infoItem}>
               <div className={pageStyles.infoLabel}>場所の魅力</div>
-              <div className={pageStyles.infoValue}>{spot.description}</div>
-            </div>
-            <div className={pageStyles.infoItem}>
-              <div className={pageStyles.infoLabel}>まず感じたいこと</div>
-              <div className={pageStyles.infoValue}>{spot.list_copy}</div>
+              <div className={pageStyles.infoValue}>{placeIntro}</div>
             </div>
           </div>
         </article>
       </section>
 
       <section className={pageStyles.section}>
-        <SectionHeading title="この場所と物語" meta="現地で読む理由を先に知る" />
-        <div className={pageStyles.stack}>
-          {whyHereItems.map((item) => (
-            <article className={pageStyles.detailBlock} key={item.relation_id}>
-              <div className={pageStyles.infoList}>
-                <div className={pageStyles.infoItem}>
-                  <div className={pageStyles.infoLabel}>読みどころ</div>
-                  <div className={pageStyles.infoValue}>{item.why_here}</div>
-                </div>
-                {item.editor_note ? (
-                  <div className={pageStyles.infoItem}>
-                    <div className={pageStyles.infoLabel}>案内メモ</div>
-                    <div className={pageStyles.infoValue}>{item.editor_note}</div>
-                  </div>
-                ) : null}
-              </div>
-            </article>
-          ))}
-        </div>
+        <SectionHeading title="この場所からどう読む" meta="場所から作品へ入る助走" />
+        <article className={pageStyles.detailBlock}>
+          <div className={pageStyles.infoList}>
+            <div className={pageStyles.infoItem}>
+              <div className={pageStyles.infoLabel}>読書の入口</div>
+              <div className={pageStyles.infoValue}>{readingEntry}</div>
+            </div>
+          </div>
+        </article>
       </section>
 
       <section className={pageStyles.section}>
         <SectionHeading title="まずはこの一冊" meta="場所から作品へ入る" />
+        <article className={pageStyles.detailBlock}>
+          <div className={pageStyles.infoList}>
+            <div className={pageStyles.infoItem}>
+              <div className={pageStyles.infoLabel}>最初にすすめたい理由</div>
+              <div className={pageStyles.infoValue}>{firstBookReason}</div>
+            </div>
+          </div>
+        </article>
         {anchorPair ? (
           <AnchorWorkCard
             ctaLabel="この作品を見る"

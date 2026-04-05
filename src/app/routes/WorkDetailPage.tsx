@@ -41,6 +41,12 @@ export function WorkDetailPage() {
       : undefined) ??
     spotPairs.find((pair) => pair.relation.is_anchor) ??
     spotPairs[0];
+  const heroCopy = work.heroCopy ?? null;
+  const workIntro = work.workIntro ?? work.summary_short;
+  const readingPoint =
+    work.readingPoint ??
+    (heroCopy || workIntro === work.summary_short ? null : work.summary_short);
+  const placeRelationNote = work.placeRelationNote ?? activePair?.relation.detail_intro ?? null;
 
   const audienceCopy = audienceCopyMap[work.slug] ?? ["場所から物語に入りたい人"];
 
@@ -71,7 +77,7 @@ export function WorkDetailPage() {
           <div className={pageStyles.heroMetaPill}>{work.year_label}</div>
           <div className={pageStyles.heroMetaPill}>{work.format === "series" ? "シリーズ" : "長編小説"}</div>
         </div>
-        <p className={pageStyles.heroLead}>{work.summary_short}</p>
+        {heroCopy ? <p className={pageStyles.heroLead}>{heroCopy}</p> : null}
       </section>
 
       <section className={pageStyles.section}>
@@ -83,9 +89,15 @@ export function WorkDetailPage() {
               <div className={pageStyles.infoValue}>{work.author}</div>
             </div>
             <div className={pageStyles.infoItem}>
-              <div className={pageStyles.infoLabel}>作品の印象</div>
-              <div className={pageStyles.infoValue}>{work.summary_short}</div>
+              <div className={pageStyles.infoLabel}>作品紹介</div>
+              <div className={pageStyles.infoValue}>{workIntro}</div>
             </div>
+            {readingPoint ? (
+              <div className={pageStyles.infoItem}>
+                <div className={pageStyles.infoLabel}>読み味の入口</div>
+                <div className={pageStyles.infoValue}>{readingPoint}</div>
+              </div>
+            ) : null}
           </div>
         </article>
       </section>
@@ -109,10 +121,12 @@ export function WorkDetailPage() {
                 <div className={pageStyles.infoLabel}>案内文</div>
                 <div className={pageStyles.infoValue}>{activePair.relation.card_copy}</div>
               </div>
-              <div className={pageStyles.infoItem}>
-                <div className={pageStyles.infoLabel}>読みはじめの温度</div>
-                <div className={pageStyles.infoValue}>{activePair.relation.detail_intro}</div>
-              </div>
+              {placeRelationNote ? (
+                <div className={pageStyles.infoItem}>
+                  <div className={pageStyles.infoLabel}>この場所から読むと</div>
+                  <div className={pageStyles.infoValue}>{placeRelationNote}</div>
+                </div>
+              ) : null}
             </div>
           </article>
         </section>

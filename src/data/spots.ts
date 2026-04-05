@@ -1,6 +1,7 @@
 import type { Spot } from "./types";
+import { spotTextPatches } from "./spotTextPatches";
 
-export const spots: Spot[] = [
+const rawSpots: Spot[] = [
   {
     spot_id: "spot_kinkakuji",
     slug: "kyoto-kinkaku",
@@ -669,3 +670,19 @@ export const spots: Spot[] = [
     tags: ["山あい", "風の又三郎", "宮沢賢治"],
   },
 ];
+
+export const spots: Spot[] = rawSpots.map((spot) => {
+  const patch = spotTextPatches[spot.display_name];
+
+  if (!patch) {
+    return spot;
+  }
+
+  return {
+    ...spot,
+    heroCopy: patch.heroCopy,
+    placeIntro: patch.placeIntro,
+    readingEntry: patch.readingEntry,
+    firstBookReason: patch.firstBookReason,
+  };
+});

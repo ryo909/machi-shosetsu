@@ -1,4 +1,5 @@
 import type { Work } from "./types";
+import { workTextPatches } from "./workTextPatches";
 
 const blankLinks = {
   amazon: null,
@@ -6,7 +7,7 @@ const blankLinks = {
   kindle: null,
 };
 
-export const works: Work[] = [
+const rawWorks: Work[] = [
   {
     work_id: "work_kinkakuji",
     slug: "kinkakuji",
@@ -590,3 +591,17 @@ export const works: Work[] = [
     status: "published",
   },
 ];
+
+export const works: Work[] = rawWorks.map((work) => {
+  const patch = workTextPatches[work.title];
+
+  if (!patch) {
+    return work;
+  }
+
+  return {
+    ...work,
+    heroCopy: patch.heroCopy,
+    workIntro: patch.workIntro,
+  };
+});
