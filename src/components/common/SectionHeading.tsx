@@ -10,7 +10,10 @@ type SectionHeadingProps = {
 export function SectionHeading({ title, meta }: SectionHeadingProps) {
   return (
     <div className={styles.sectionHeadingWrap}>
-      <h2 className={styles.sectionHeading}>{title}</h2>
+      <div>
+        <h2 className={styles.sectionHeading}>{title}</h2>
+        <span className={styles.sectionRule} aria-hidden="true" />
+      </div>
       {meta ? <div className={styles.sectionMeta}>{meta}</div> : null}
     </div>
   );

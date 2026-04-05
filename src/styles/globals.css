@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700&display=swap');
+
 :root {
   --bg: #f6f0e6;
   --bg-2: #fbf8f3;
+  --bg-section: #f2ebe0;
   --paper: #fffdf9;
   --ink: #2f2823;
   --muted: #74695d;
@@ -10,11 +13,15 @@
   --gold: #b38a57;
   --sage: #8aa090;
   --rose: #a97b6c;
+  --olive: #6b7c5e;
   --shadow: 0 10px 28px rgba(66, 46, 28, 0.08), 0 2px 10px rgba(66, 46, 28, 0.05);
+  --shadow-hover: 0 16px 40px rgba(66, 46, 28, 0.13), 0 4px 14px rgba(66, 46, 28, 0.07);
   --radius: 24px;
   --radius-sm: 16px;
-  --font-serif: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", Georgia, serif;
+  --font-serif: "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", Georgia, serif;
   --font-sans: "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", sans-serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-base: 240ms var(--ease-out);
 }
 
 * {
@@ -24,18 +31,21 @@
 html {
   min-height: 100%;
   background: var(--bg);
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(179, 138, 87, 0.08), transparent 24%),
-    linear-gradient(180deg, var(--bg-2), var(--bg));
+    radial-gradient(ellipse at 10% 0%, rgba(179, 138, 87, 0.1), transparent 40%),
+    radial-gradient(ellipse at 90% 60%, rgba(138, 160, 144, 0.07), transparent 40%),
+    linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 50%, var(--bg-section) 100%);
   color: var(--ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  line-height: 1.7;
 }
 
 button,
@@ -61,13 +71,13 @@ a {
 }
 
 .app-shell {
-  width: min(100%, 680px);
+  width: min(100%, 720px);
   margin: 0 auto;
 }
 
 .app-main {
   min-height: 100vh;
-  padding: max(8px, env(safe-area-inset-top)) 0 calc(108px + env(safe-area-inset-bottom));
+  padding: max(12px, env(safe-area-inset-top)) 0 calc(108px + env(safe-area-inset-bottom));
 }
 
 .pillLink {
@@ -75,11 +85,17 @@ a {
   align-items: center;
   justify-content: center;
   min-height: 46px;
-  padding: 0 18px;
+  padding: 0 20px;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--accent), #486171);
   color: #fff;
   font-weight: 700;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.pillLink:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(93, 118, 136, 0.2);
 }
 
 .pillLink.secondary {
@@ -88,7 +104,36 @@ a {
   border: 1px solid rgba(221, 208, 194, 0.88);
 }
 
+.pillLink.secondary:hover {
+  background: rgba(255, 253, 249, 1);
+  border-color: var(--gold);
+}
+
 .textLink {
   color: var(--accent);
   font-weight: 700;
+  transition: color var(--transition-base);
+}
+
+.textLink:hover {
+  color: var(--accent-2);
+}
+
+/* Decorative ornament utility */
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gold);
+  opacity: 0.5;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+}
+
+.ornament::before,
+.ornament::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
 }

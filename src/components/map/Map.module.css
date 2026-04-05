@@ -1,20 +1,53 @@
 .mapCard {
   position: relative;
-  padding: 18px;
-  border: 1px solid rgba(221, 208, 194, 0.9);
+  padding: 0;
+  border: 1px solid rgba(221, 208, 194, 0.85);
   border-radius: var(--radius);
   background:
-    linear-gradient(180deg, rgba(255, 253, 249, 0.9), rgba(246, 240, 230, 0.9));
+    radial-gradient(ellipse at 30% 20%, rgba(138, 160, 144, 0.06), transparent 40%),
+    linear-gradient(180deg, rgba(255, 253, 249, 0.94), rgba(246, 240, 230, 0.94));
   box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.mapHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px 0;
+}
+
+.mapCompass {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(93, 118, 136, 0.3);
+  color: var(--accent);
+  font-family: var(--font-serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.mapTitle {
+  color: var(--muted);
+  font-family: var(--font-serif);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
 }
 
 .mapFrame {
   position: relative;
-  aspect-ratio: 0.82;
-  border-radius: calc(var(--radius) - 4px);
+  aspect-ratio: 0.8;
+  margin: 8px 16px 16px;
+  border-radius: calc(var(--radius) - 6px);
   background:
-    radial-gradient(circle at 20% 18%, rgba(93, 118, 136, 0.08), transparent 22%),
-    linear-gradient(180deg, rgba(93, 118, 136, 0.08), rgba(138, 160, 144, 0.08));
+    radial-gradient(ellipse at 20% 15%, rgba(93, 118, 136, 0.07), transparent 30%),
+    radial-gradient(ellipse at 80% 70%, rgba(138, 160, 144, 0.06), transparent 30%),
+    linear-gradient(180deg, rgba(93, 118, 136, 0.05), rgba(138, 160, 144, 0.06));
   overflow: hidden;
 }
 
@@ -24,13 +57,15 @@
 }
 
 .land {
-  fill: rgba(136, 113, 90, 0.14);
-  stroke: rgba(116, 105, 93, 0.28);
-  stroke-width: 2;
+  fill: rgba(136, 113, 90, 0.16);
+  stroke: rgba(116, 105, 93, 0.32);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  transition: fill var(--transition-base);
 }
 
 .guide {
-  fill: rgba(93, 118, 136, 0.04);
+  fill: rgba(93, 118, 136, 0.03);
 }
 
 .pinsLayer {
@@ -42,16 +77,23 @@
   position: absolute;
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  border: 1px solid rgba(93, 118, 136, 0.3);
+  border: 1.5px solid rgba(93, 118, 136, 0.35);
   border-radius: 50% 50% 50% 0;
-  background: rgba(255, 253, 249, 0.94);
-  box-shadow: 0 8px 18px rgba(66, 46, 28, 0.12);
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: 0 6px 16px rgba(66, 46, 28, 0.14);
   color: var(--accent);
   transform: translate(-50%, -100%) rotate(-45deg);
-  transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+  transition: transform 280ms var(--ease-out), background-color 280ms var(--ease-out), border-color 280ms var(--ease-out), box-shadow 280ms var(--ease-out);
+  z-index: 2;
+}
+
+.pin:hover {
+  transform: translate(-50%, -100%) rotate(-45deg) scale(1.08);
+  box-shadow: 0 8px 22px rgba(66, 46, 28, 0.18);
+  z-index: 5;
 }
 
 .pinInner {
@@ -63,30 +105,83 @@
   transform: rotate(45deg);
 }
 
+.pinRing {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50% 50% 50% 0;
+  border: 2px solid var(--gold);
+  opacity: 0;
+  animation: pinPulse 1.6s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pinPulse {
+  0% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
 .pinActive {
   color: var(--accent-2);
-  border-color: rgba(179, 138, 87, 0.46);
+  border-color: var(--gold);
   background: rgba(255, 253, 249, 1);
-  transform: translate(-50%, -100%) rotate(-45deg) scale(1.12);
+  transform: translate(-50%, -100%) rotate(-45deg) scale(1.18);
+  box-shadow: 0 8px 24px rgba(179, 138, 87, 0.22);
+  z-index: 4;
+}
+
+.pinLabel {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: rotate(45deg) translateX(-50%);
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(47, 40, 35, 0.82);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+.pin:hover .pinLabel,
+.pinActive .pinLabel {
+  opacity: 1;
 }
 
 .miniList {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .miniListButton {
   display: grid;
   gap: 12px;
-  padding: 16px;
-  border: 1px solid rgba(221, 208, 194, 0.84);
+  padding: 18px;
+  border: 1px solid rgba(221, 208, 194, 0.8);
   border-radius: var(--radius-sm);
-  background: rgba(255, 253, 249, 0.86);
+  background: rgba(255, 253, 249, 0.88);
+  transition: border-color var(--transition-base), background-color var(--transition-base), transform var(--transition-base);
+}
+
+.miniListButton:hover {
+  transform: translateY(-1px);
+  border-color: rgba(179, 138, 87, 0.3);
 }
 
 .miniListButtonActive {
-  border-color: rgba(93, 118, 136, 0.26);
-  background: rgba(93, 118, 136, 0.08);
+  border-color: rgba(93, 118, 136, 0.3);
+  border-left: 3px solid var(--accent);
+  background: rgba(93, 118, 136, 0.06);
 }
 
 .miniListText {
@@ -97,12 +192,14 @@
   color: var(--accent);
   font-size: 0.76rem;
   font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .miniListTitle {
   margin-top: 5px;
   color: var(--ink);
   font-weight: 700;
+  font-size: 1.02rem;
 }
 
 .miniListMeta {
@@ -120,14 +217,36 @@
 
 .miniListSelect {
   color: var(--accent);
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   font-weight: 700;
   white-space: nowrap;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(93, 118, 136, 0.08);
+  transition: background-color var(--transition-base);
+}
+
+.miniListSelect:hover {
+  background: rgba(93, 118, 136, 0.14);
 }
 
 .miniListLink {
   display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: var(--accent-2);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
+  transition: color var(--transition-base);
+}
+
+.miniListLink::after {
+  content: "→";
+  font-size: 0.85em;
+  opacity: 0.6;
+  transition: transform 200ms ease;
+}
+
+.miniListLink:hover::after {
+  transform: translateX(3px);
 }

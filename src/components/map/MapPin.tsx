@@ -19,6 +19,8 @@ export function MapPin({ x, y, active = false, onClick, label }: MapPinProps) {
       type="button"
     >
       <span className={styles.pinInner} />
+      {active ? <span className={styles.pinRing} /> : null}
+      <span className={styles.pinLabel}>{label}</span>
     </button>
   );
 }

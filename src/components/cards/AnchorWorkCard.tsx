@@ -13,7 +13,10 @@ type AnchorWorkCardProps = {
 export function AnchorWorkCard({ work, relation, spotSlug }: AnchorWorkCardProps) {
   return (
     <article className={`${styles.card} ${styles.anchorCard}`}>
-      <div className={styles.eyebrow}>まずはこの一冊</div>
+      <div className={styles.eyebrow}>
+        <span aria-hidden="true">◆</span>
+        まずはこの一冊
+      </div>
       <h3 className={styles.workTitle}>{work.title}</h3>
       <p className={styles.author}>{work.author}</p>
       <div className={styles.badgeRow}>

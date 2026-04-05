@@ -37,7 +37,11 @@ export function SavedPage() {
           savedSpots.length > 0 ? (
             <div className={pageStyles.stack}>
               {savedSpots.map((spot) => (
-                <Link className={pageStyles.detailBlock} key={spot.spot_id} to={`/spots/${spot.slug}`}>
+                <Link
+                  className={`${pageStyles.detailBlock} ${pageStyles.savedItem}`}
+                  key={spot.spot_id}
+                  to={`/spots/${spot.slug}`}
+                >
                   <div className={pageStyles.heroRegion}>{spot.parent_area}</div>
                   <h3 className={pageStyles.spotTitle}>{spot.display_name}</h3>
                   <p className={pageStyles.heroDescription}>{spot.list_copy}</p>
@@ -54,7 +58,11 @@ export function SavedPage() {
         ) : savedWorks.length > 0 ? (
           <div className={pageStyles.stack}>
             {savedWorks.map((work) => (
-              <Link className={pageStyles.detailBlock} key={work.work_id} to={`/works/${work.slug}`}>
+              <Link
+                className={`${pageStyles.detailBlock} ${pageStyles.savedItem}`}
+                key={work.work_id}
+                to={`/works/${work.slug}`}
+              >
                 <div className={pageStyles.heroRegion}>{work.author}</div>
                 <h3 className={pageStyles.spotTitle}>{work.title}</h3>
                 <p className={pageStyles.heroDescription}>{work.summary_short}</p>
