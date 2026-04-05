@@ -75,6 +75,10 @@ a {
   margin: 0 auto;
 }
 
+.app-shell-wide {
+  width: min(100%, 1180px);
+}
+
 .app-main {
   min-height: 100vh;
   padding: max(12px, env(safe-area-inset-top)) 0 calc(108px + env(safe-area-inset-bottom));

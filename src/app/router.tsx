@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { BottomNav } from "../components/navigation/BottomNav";
 import { HomePage } from "./routes/HomePage";
@@ -9,8 +9,11 @@ import { SpotsPage } from "./routes/SpotsPage";
 import { WorkDetailPage } from "./routes/WorkDetailPage";
 
 function AppShell() {
+  const location = useLocation();
+  const shellClassName = `app-shell ${location.pathname.startsWith("/map") ? "app-shell-wide" : ""}`.trim();
+
   return (
-    <div className="app-shell">
+    <div className={shellClassName}>
       <main className="app-main">
         <Outlet />
       </main>

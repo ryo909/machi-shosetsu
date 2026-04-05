@@ -51,6 +51,7 @@ const MAP_ANCHORS: MapAnchor[] = [
   { name: "hakodate", lat: 41.7687, lng: 140.7288, x: 0.58, y: 0.29 },
   { name: "aomori", lat: 40.8244, lng: 140.74, x: 0.53, y: 0.35 },
   { name: "tsugaru", lat: 40.9092, lng: 140.4337, x: 0.42, y: 0.41 },
+  { name: "hanamaki", lat: 39.3886, lng: 141.1167, x: 0.495, y: 0.515 },
   { name: "sendai", lat: 38.2688, lng: 140.8721, x: 0.56, y: 0.46 },
   { name: "tsuruoka", lat: 38.7272, lng: 139.8268, x: 0.442, y: 0.469 },
   { name: "tono", lat: 39.5538, lng: 141.468, x: 0.506, y: 0.488 },
@@ -70,7 +71,8 @@ const MAP_ANCHORS: MapAnchor[] = [
   { name: "kumamoto", lat: 32.8031, lng: 130.7079, x: 0.18, y: 0.77 },
   { name: "kagoshima", lat: 31.5966, lng: 130.5571, x: 0.2, y: 0.818 },
   { name: "naha", lat: 26.2125, lng: 127.6811, x: 0.082, y: 0.902 },
-  { name: "okinawaMainNorth", lat: 26.5013, lng: 127.9454, x: 0.086, y: 0.882 },
+  { name: "koza", lat: 26.3344, lng: 127.8055, x: 0.088, y: 0.892 },
+  { name: "okinawaMainNorth", lat: 26.5013, lng: 127.9454, x: 0.09, y: 0.882 },
   { name: "minamidaito", lat: 25.8285, lng: 131.2313, x: 0.186, y: 0.888 },
 ];
 
@@ -181,8 +183,71 @@ function getRegionForLatLng(lat: number, lng: number): MapRegionKey {
   return "kanto";
 }
 
+function projectTohokuPoint(lat: number, lng: number): MapPoint {
+  const northness = inverseLerp(37.8, 41.15, lat);
+  const eastness = inverseLerp(139.65, 141.55, lng);
+
+  const westNorth = anchorByName.tsugaru;
+  const westSouth = anchorByName.tsuruoka;
+  const eastMid = anchorByName.hanamaki;
+  const eastNorth = anchorByName.aomori;
+  const eastSouth = anchorByName.sendai;
+
+  const eastColumnBlend = lat >= eastMid.lat
+    ? inverseLerp(eastMid.lat, eastNorth.lat, lat)
+    : inverseLerp(eastSouth.lat, eastMid.lat, lat);
+
+  const eastX = lat >= eastMid.lat
+    ? lerp(eastMid.x, eastNorth.x, eastColumnBlend)
+    : lerp(eastSouth.x, eastMid.x, eastColumnBlend);
+  const eastY = lat >= eastMid.lat
+    ? lerp(eastMid.y, eastNorth.y, eastColumnBlend)
+    : lerp(eastSouth.y, eastMid.y, eastColumnBlend);
+  const westX = lerp(westSouth.x, westNorth.x, northness);
+  const westY = lerp(westSouth.y, westNorth.y, northness);
+
+  return {
+    x: clamp(lerp(westX, eastX, eastness), 0.32, 0.58),
+    y: clamp(lerp(westY, eastY, eastness), 0.33, 0.58),
+  };
+}
+
+function projectOkinawaPoint(lat: number, lng: number): MapPoint {
+  const naha = anchorByName.naha;
+  const koza = anchorByName.koza;
+  const minamidaito = anchorByName.minamidaito;
+
+  if (lng > 129.3) {
+    const eastness = inverseLerp(127.8, minamidaito.lng, lng);
+    const southness = inverseLerp(26.36, minamidaito.lat, lat);
+
+    return {
+      x: clamp(lerp(koza.x, minamidaito.x, eastness), 0.09, 0.22),
+      y: clamp(lerp(koza.y, minamidaito.y, southness), 0.86, 0.93),
+    };
+  }
+
+  const eastness = inverseLerp(naha.lng, koza.lng, lng);
+  const northness = inverseLerp(naha.lat, anchorByName.okinawaMainNorth.lat, lat);
+
+  return {
+    x: clamp(lerp(naha.x, koza.x, eastness), 0.07, 0.11),
+    y: clamp(lerp(naha.y, anchorByName.okinawaMainNorth.y, northness), 0.875, 0.91),
+  };
+}
+
 export function projectLatLngToMapPoint(lat: number, lng: number): MapPoint {
-  const region = REGION_CALIBRATIONS[getRegionForLatLng(lat, lng)];
+  const regionKey = getRegionForLatLng(lat, lng);
+
+  if (regionKey === "tohoku") {
+    return projectTohokuPoint(lat, lng);
+  }
+
+  if (regionKey === "okinawa") {
+    return projectOkinawaPoint(lat, lng);
+  }
+
+  const region = REGION_CALIBRATIONS[regionKey];
   const north = anchorByName[region.north];
   const south = anchorByName[region.south];
   const west = anchorByName[region.west];
@@ -375,6 +440,10 @@ export function buildSpotMapLayout(
       } satisfies SpotMapLayout;
     }
 
+    // Order matters for maintenance:
+    // 1. lat/lng or fallback gives the base position
+    // 2. collision handling adjusts only the display position
+    // 3. fine_dx / fine_dy are applied last as a small manual nudge
     const displayPx = clampPointToImage(
       {
         x: match.displayPx.x + match.fineOffsetPx.x,

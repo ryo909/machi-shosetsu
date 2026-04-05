@@ -1,5 +1,6 @@
 .mapCard {
   position: relative;
+  min-width: 0;
   padding: 0;
   border: 1px solid rgba(221, 208, 194, 0.85);
   border-radius: var(--radius);
@@ -41,10 +42,8 @@
 
 .mapFrame {
   position: relative;
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1305 / 720;
-  min-height: 320px;
+  width: 100%;
+  min-width: 0;
   margin: 6px 8px 10px;
   padding: 8px;
   border-radius: calc(var(--radius) - 6px);
@@ -54,9 +53,16 @@
   overflow: hidden;
 }
 
+.mapImageBox {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
 .mapImage {
   display: block;
   width: 100%;
+  max-width: 100%;
   height: auto;
   user-select: none;
   -webkit-user-drag: none;
@@ -317,7 +323,6 @@
 
 @media (min-width: 1024px) {
   .mapFrame {
-    min-height: 500px;
     margin: 6px 10px 12px;
     padding: 10px;
   }

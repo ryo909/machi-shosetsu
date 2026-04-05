@@ -35,11 +35,12 @@ export function JapanMapCard({
   debug = false,
 }: JapanMapCardProps) {
   const frameRef = useRef<HTMLDivElement | null>(null);
+  const imageBoxRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [imageBounds, setImageBounds] = useState<ImageBounds>(emptyBounds);
 
   useEffect(() => {
-    const frame = frameRef.current;
+    const frame = imageBoxRef.current;
     const image = imageRef.current;
 
     if (!frame || !image) {
@@ -94,91 +95,93 @@ export function JapanMapCard({
         <span className={styles.mapTitle}>文学スポットマップ</span>
       </div>
       <div className={styles.mapFrame} ref={frameRef}>
-        <img
-          alt="日本地図"
-          className={styles.mapImage}
-          draggable="false"
-          onLoad={() => {
-            const frame = frameRef.current;
-            const image = imageRef.current;
+        <div className={styles.mapImageBox} ref={imageBoxRef}>
+          <img
+            alt="日本地図"
+            className={styles.mapImage}
+            draggable="false"
+            onLoad={() => {
+              const frame = imageBoxRef.current;
+              const image = imageRef.current;
 
-            if (!frame || !image) {
-              return;
-            }
+              if (!frame || !image) {
+                return;
+              }
 
-            const frameRect = frame.getBoundingClientRect();
-            const imageRect = image.getBoundingClientRect();
+              const frameRect = frame.getBoundingClientRect();
+              const imageRect = image.getBoundingClientRect();
 
-            setImageBounds({
-              left: imageRect.left - frameRect.left,
-              top: imageRect.top - frameRect.top,
-              width: imageRect.width,
-              height: imageRect.height,
-            });
-          }}
-          ref={imageRef}
-          src={mapImageSrc}
-        />
-        <div className={styles.mapImageVeil} style={overlayStyle} aria-hidden="true" />
-        {debug && imageBounds.width > 0 ? (
-          <svg className={styles.debugLayer} style={overlayStyle} viewBox={`0 0 ${imageBounds.width} ${imageBounds.height}`}>
+              setImageBounds({
+                left: imageRect.left - frameRect.left,
+                top: imageRect.top - frameRect.top,
+                width: imageRect.width,
+                height: imageRect.height,
+              });
+            }}
+            ref={imageRef}
+            src={mapImageSrc}
+          />
+          <div className={styles.mapImageVeil} style={overlayStyle} aria-hidden="true" />
+          {debug && imageBounds.width > 0 ? (
+            <svg className={styles.debugLayer} style={overlayStyle} viewBox={`0 0 ${imageBounds.width} ${imageBounds.height}`}>
+              {mapLayout.map((item) =>
+                item.basePx && item.displayPx ? (
+                  <g key={`debug-line-${item.spot.spot_id}`}>
+                    <line
+                      className={styles.debugLine}
+                      x1={item.basePx.x}
+                      x2={item.displayPx.x}
+                      y1={item.basePx.y}
+                      y2={item.displayPx.y}
+                    />
+                    <circle className={styles.debugDot} cx={item.basePx.x} cy={item.basePx.y} r="3.5" />
+                  </g>
+                ) : null,
+              )}
+            </svg>
+          ) : null}
+          <div className={styles.pinsLayer} style={overlayStyle}>
             {mapLayout.map((item) =>
-              item.basePx && item.displayPx ? (
-                <g key={`debug-line-${item.spot.spot_id}`}>
-                  <line
-                    className={styles.debugLine}
-                    x1={item.basePx.x}
-                    x2={item.displayPx.x}
-                    y1={item.basePx.y}
-                    y2={item.displayPx.y}
+              item.displayPx ? (
+                <div className={styles.pinCluster} key={item.spot.spot_id}>
+                  <MapPin
+                    active={item.spot.spot_id === selectedSpotId}
+                    label={item.spot.display_name}
+                    onClick={() => onSelect(item.spot.spot_id)}
+                    x={item.displayPx.x}
+                    y={item.displayPx.y}
+                    zIndex={item.zIndex}
                   />
-                  <circle className={styles.debugDot} cx={item.basePx.x} cy={item.basePx.y} r="3.5" />
-                </g>
+                  {debug && item.basePx ? (
+                    <div
+                      className={styles.debugLabel}
+                      style={{
+                        left: `${Math.min(item.displayPx.x + 10, imageBounds.width - 148)}px`,
+                        top: `${Math.max(item.displayPx.y - 64, 6)}px`,
+                        zIndex: item.zIndex + 1,
+                      }}
+                    >
+                      <strong>{item.spot.short_name}</strong>
+                      <span>{item.source}</span>
+                      <span>
+                        base {item.basePx.x.toFixed(1)}, {item.basePx.y.toFixed(1)}
+                      </span>
+                      <span>
+                        display {item.displayPx.x.toFixed(1)}, {item.displayPx.y.toFixed(1)}
+                      </span>
+                      <span>
+                        lat/lng {item.spot.lat ?? "-"}, {item.spot.lng ?? "-"}
+                      </span>
+                      <span>
+                        fine {item.spot.fine_dx ?? 0}, {item.spot.fine_dy ?? 0}
+                      </span>
+                      <span>{item.collisionAdjusted ? "collision adjusted" : "base only"}</span>
+                    </div>
+                  ) : null}
+                </div>
               ) : null,
             )}
-          </svg>
-        ) : null}
-        <div className={styles.pinsLayer} style={overlayStyle}>
-          {mapLayout.map((item) =>
-            item.displayPx ? (
-              <div className={styles.pinCluster} key={item.spot.spot_id}>
-                <MapPin
-                  active={item.spot.spot_id === selectedSpotId}
-                  label={item.spot.display_name}
-                  onClick={() => onSelect(item.spot.spot_id)}
-                  x={item.displayPx.x}
-                  y={item.displayPx.y}
-                  zIndex={item.zIndex}
-                />
-                {debug && item.basePx ? (
-                  <div
-                    className={styles.debugLabel}
-                    style={{
-                      left: `${Math.min(item.displayPx.x + 10, imageBounds.width - 148)}px`,
-                      top: `${Math.max(item.displayPx.y - 64, 6)}px`,
-                      zIndex: item.zIndex + 1,
-                    }}
-                  >
-                    <strong>{item.spot.short_name}</strong>
-                    <span>{item.source}</span>
-                    <span>
-                      base {item.basePx.x.toFixed(1)}, {item.basePx.y.toFixed(1)}
-                    </span>
-                    <span>
-                      display {item.displayPx.x.toFixed(1)}, {item.displayPx.y.toFixed(1)}
-                    </span>
-                    <span>
-                      lat/lng {item.spot.lat ?? "-"}, {item.spot.lng ?? "-"}
-                    </span>
-                    <span>
-                      fine {item.spot.fine_dx ?? 0}, {item.spot.fine_dy ?? 0}
-                    </span>
-                    <span>{item.collisionAdjusted ? "collision adjusted" : "base only"}</span>
-                  </div>
-                ) : null}
-              </div>
-            ) : null,
-          )}
+          </div>
         </div>
       </div>
       {debug ? (
