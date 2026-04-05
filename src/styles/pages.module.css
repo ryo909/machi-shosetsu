@@ -224,9 +224,32 @@ a.detailBlock:hover,
   padding: 0 20px;
 }
 
+.filterStack {
+  display: grid;
+  gap: 14px;
+}
+
+.filterLabel {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
 .mapStage {
   display: grid;
   gap: 18px;
+}
+
+.mapExplorerStage {
+  display: grid;
+  gap: 18px;
+}
+
+.mapFiltersPanel {
+  display: grid;
+  gap: 14px;
 }
 
 .mapMainColumn {
@@ -238,6 +261,24 @@ a.detailBlock:hover,
   align-content: start;
   gap: 14px;
   min-width: 0;
+}
+
+.mapDetailsPanel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-width: 0;
+}
+
+.infoValueLink {
+  color: var(--ink);
+  line-height: 1.8;
+  font-weight: 700;
+  transition: color var(--transition-base);
+}
+
+.infoValueLink:hover {
+  color: var(--accent);
 }
 
 /* Saved page bookshelf accent */
@@ -272,5 +313,27 @@ a.detailBlock:hover,
   .mapPreviewColumn {
     position: sticky;
     top: 24px;
+  }
+
+  .mapExplorerStage {
+    grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.95fr);
+    grid-template-areas:
+      "map filters"
+      "map details";
+    align-items: start;
+  }
+
+  .mapMainColumn {
+    grid-area: map;
+  }
+
+  .mapFiltersPanel {
+    grid-area: filters;
+    position: sticky;
+    top: 24px;
+  }
+
+  .mapDetailsPanel {
+    grid-area: details;
   }
 }

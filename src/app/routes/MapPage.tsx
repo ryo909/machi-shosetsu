@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { SelectedSpotPreviewCard } from "../../components/cards/SelectedSpotPreviewCard";
 import { EmptyState } from "../../components/common/EmptyState";
@@ -9,46 +9,116 @@ import { Header } from "../../components/layout/Header";
 import { JapanMapCard } from "../../components/map/JapanMapCard";
 import { MapSpotMiniList } from "../../components/map/MapSpotMiniList";
 import {
+  getAvailablePrefectureOptions,
   getAvailableRegionOptions,
-  getAnchorRelationForSpot,
-  getMapSpots,
+  getPrefectureMapSummaries,
+  getPublishedSpots,
+  getRepresentativeMapSpotsForPrefecture,
   getRepresentativeWorkForSpot,
   getSpotById,
 } from "../../lib/selectors";
+import { broadRegionLabels, isBroadRegionKey } from "../../lib/regions";
 import pageStyles from "../../styles/pages.module.css";
+
+function buildAreaSummary(
+  region: string,
+  prefectureLabel: string | null,
+  prefectureCount: number,
+  spotCount: number,
+) {
+  if (prefectureLabel) {
+    return `${prefectureLabel}には ${spotCount} 件の文学スポットがあります。地図では代表スポットだけを静かに示し、詳しい出会いは一覧で拾えるようにしています。`;
+  }
+
+  if (region !== "all") {
+    return `${broadRegionLabels[region as keyof typeof broadRegionLabels]}には ${prefectureCount} 県・${spotCount} 件のスポットがあります。まずは気になる県をひとつ選んでください。`;
+  }
+
+  return `全国では ${prefectureCount} 県に ${spotCount} 件の文学スポットがあります。地域を選んでから県へ絞ると、場所から一冊へ入りやすくなります。`;
+}
 
 export function MapPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const region = searchParams.get("region") ?? "all";
-  const debugMap = import.meta.env.DEV && searchParams.get("debugMap") === "1";
-  const calibrateMap = import.meta.env.DEV && searchParams.get("calibrate") === "1";
-  const visibleSpots = getMapSpots(region);
+  const rawRegion = searchParams.get("region");
+  const rawPrefecture = searchParams.get("prefecture");
+  const region = isBroadRegionKey(rawRegion) ? rawRegion : "all";
+  const prefecture = rawPrefecture ?? (!isBroadRegionKey(rawRegion) && rawRegion ? rawRegion : "all");
+
   const regionOptions = getAvailableRegionOptions();
+  const prefectureOptions: Array<{
+    value: string;
+    label: string;
+    region?: string;
+    count?: number;
+  }> = [
+    { value: "all", label: "すべて" },
+    ...getAvailablePrefectureOptions(region),
+  ];
+  const prefectureSummaries = getPrefectureMapSummaries(region === "all" ? null : region);
+  const prefectureSpots =
+    prefecture !== "all"
+      ? getPublishedSpots({
+          prefecture,
+          region,
+        })
+      : [];
+  const representativeSpots =
+    prefecture !== "all" ? getRepresentativeMapSpotsForPrefecture(prefecture, 5) : [];
+
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(
-    visibleSpots[0]?.spot_id ?? null,
+    representativeSpots[0]?.spot_id ?? null,
   );
 
   useEffect(() => {
-    if (!visibleSpots.some((spot) => spot.spot_id === selectedSpotId)) {
-      setSelectedSpotId(visibleSpots[0]?.spot_id ?? null);
+    if (prefecture === "all") {
+      setSelectedSpotId(null);
+      return;
     }
-  }, [selectedSpotId, visibleSpots]);
 
+    if (!prefectureSpots.some((spot) => spot.spot_id === selectedSpotId)) {
+      setSelectedSpotId(representativeSpots[0]?.spot_id ?? prefectureSpots[0]?.spot_id ?? null);
+    }
+  }, [prefecture, prefectureSpots, representativeSpots, selectedSpotId]);
+
+  const selectedPrefectureOption =
+    prefectureOptions.find((option) => option.value === prefecture) ?? null;
   const selectedSpot = selectedSpotId ? getSpotById(selectedSpotId) : null;
   const selectedRepresentativeWork =
-    selectedSpotId && getRepresentativeWorkForSpot(selectedSpotId);
+    selectedSpotId && selectedSpot ? getRepresentativeWorkForSpot(selectedSpotId) : null;
 
   const miniListItems = useMemo(
     () =>
-      visibleSpots.map((spot) => ({
+      prefectureSpots.map((spot) => ({
         spot,
-        representativeWorkTitle:
-          getAnchorRelationForSpot(spot.spot_id) &&
-          getRepresentativeWorkForSpot(spot.spot_id)?.title
-            ? getRepresentativeWorkForSpot(spot.spot_id)!.title
-            : "作品準備中",
+        representativeWorkTitle: getRepresentativeWorkForSpot(spot.spot_id)?.title ?? "作品準備中",
       })),
-    [visibleSpots],
+    [prefectureSpots],
+  );
+
+  const relatedWorks = useMemo(() => {
+    const seen = new Set<string>();
+
+    return prefectureSpots
+      .map((spot) => {
+        const work = getRepresentativeWorkForSpot(spot.spot_id);
+        return work ? { spot, work } : null;
+      })
+      .filter((item): item is { spot: (typeof prefectureSpots)[number]; work: NonNullable<ReturnType<typeof getRepresentativeWorkForSpot>> } => item !== null)
+      .filter((item) => {
+        if (seen.has(item.work.work_id)) {
+          return false;
+        }
+        seen.add(item.work.work_id);
+        return true;
+      })
+      .slice(0, 3);
+  }, [prefectureSpots]);
+
+  const summaryText = buildAreaSummary(
+    region,
+    selectedPrefectureOption?.label ?? null,
+    prefectureSummaries.length,
+    prefecture === "all" ? prefectureSummaries.reduce((sum, item) => sum + item.count, 0) : prefectureSpots.length,
   );
 
   return (
@@ -58,59 +128,158 @@ export function MapPage() {
           { label: "ホーム", to: "/" },
           { label: "地図から探す" },
         ]}
-        description="日本地図の上から気になる土地を選び、その場所から次の一冊へつなぎます。位置関係をつかみやすくしつつ、押しやすさも優先した文学スポットマップです。"
+        description="全国地図は厳密な位置比較ではなく、地域と都道府県から文学スポットへ入るための入口として使います。まずは広い地域感から、次に県ごとの気配へ絞り込みます。"
         eyebrow="地図から探す"
-        title="文学スポットマップ"
+        title="地域と都道府県から探す"
       />
 
-      <section className={pageStyles.sectionTight}>
-        <RegionChipGroup
-          onChange={(nextRegion) => {
-            const next = new URLSearchParams(searchParams);
-            if (nextRegion === "all") {
-              next.delete("region");
-            } else {
-              next.set("region", nextRegion);
-            }
-            setSearchParams(next, { replace: true });
-          }}
-          options={regionOptions}
-          value={region}
-        />
-      </section>
-
       <section className={pageStyles.section}>
-        <div className={pageStyles.mapStage}>
+        <div className={pageStyles.mapExplorerStage}>
+          <aside className={pageStyles.mapFiltersPanel}>
+            <div className={pageStyles.detailBlock}>
+              <div className={pageStyles.filterStack}>
+                <div>
+                  <div className={pageStyles.filterLabel}>広域地域を選ぶ</div>
+                  <RegionChipGroup
+                    onChange={(nextRegion) => {
+                      const next = new URLSearchParams(searchParams);
+
+                      if (nextRegion === "all") {
+                        next.delete("region");
+                      } else {
+                        next.set("region", nextRegion);
+                      }
+
+                      const nextPrefecture = next.get("prefecture");
+                      if (
+                        nextPrefecture &&
+                        !getAvailablePrefectureOptions(nextRegion).some(
+                          (option) => option.value === nextPrefecture,
+                        )
+                      ) {
+                        next.delete("prefecture");
+                      }
+
+                      setSearchParams(next, { replace: true });
+                    }}
+                    options={regionOptions}
+                    value={region}
+                  />
+                </div>
+                <div>
+                  <div className={pageStyles.filterLabel}>都道府県を選ぶ</div>
+                  <RegionChipGroup
+                    onChange={(nextPrefecture) => {
+                      const next = new URLSearchParams(searchParams);
+
+                      if (nextPrefecture === "all") {
+                        next.delete("prefecture");
+                        setSearchParams(next, { replace: true });
+                        return;
+                      }
+
+                      const targetOption = prefectureOptions.find(
+                        (option) => option.value === nextPrefecture,
+                      );
+
+                      next.set("prefecture", nextPrefecture);
+                      if (targetOption?.region) {
+                        next.set("region", targetOption.region);
+                      }
+                      setSearchParams(next, { replace: true });
+                    }}
+                    options={prefectureOptions}
+                    value={prefecture}
+                  />
+                </div>
+              </div>
+            </div>
+          </aside>
+
           <div className={pageStyles.mapMainColumn}>
             <JapanMapCard
-              calibrate={calibrateMap}
-              debug={debugMap}
-              onSelect={setSelectedSpotId}
+              onSelectPrefecture={(prefectureKey) => {
+                const next = new URLSearchParams(searchParams);
+                const targetOption = prefectureOptions.find(
+                  (option) => option.value === prefectureKey,
+                );
+
+                next.set("prefecture", prefectureKey);
+                if (targetOption?.region) {
+                  next.set("region", targetOption.region);
+                }
+                setSearchParams(next, { replace: true });
+              }}
+              onSelectSpot={setSelectedSpotId}
+              prefectures={prefectureSummaries}
+              representativeSpots={representativeSpots}
+              selectedPrefectureKey={prefecture}
+              selectedRegion={region}
               selectedSpotId={selectedSpotId}
-              spots={visibleSpots}
             />
           </div>
-          <aside className={pageStyles.mapPreviewColumn}>
-            <SectionHeading title="選択中のスポット" meta={selectedSpot ? "地図を見ながら確認" : "まずは地図から選ぶ"} />
-            {selectedSpot && selectedRepresentativeWork ? (
-              <SelectedSpotPreviewCard
-                representativeWorkTitle={selectedRepresentativeWork.title}
-                spot={selectedSpot}
-              />
-            ) : (
-              <EmptyState message="地図上のスポットを選ぶと、ここに案内が表示されます。旅先や気になる街を選んでください。" />
-            )}
+
+          <aside className={pageStyles.mapDetailsPanel}>
+            <div className={pageStyles.stack}>
+              <div className={pageStyles.detailBlock}>
+                <div className={pageStyles.heroRegion}>
+                  {selectedPrefectureOption?.label ?? "全国から探す"}
+                </div>
+                <h2 className={pageStyles.spotTitle}>
+                  {selectedPrefectureOption
+                    ? `${selectedPrefectureOption.label}の文学スポット`
+                    : "地域から都道府県を選ぶ"}
+                </h2>
+                <p className={pageStyles.heroDescription}>{summaryText}</p>
+              </div>
+
+              {selectedSpot && selectedRepresentativeWork ? (
+                <div>
+                  <SectionHeading
+                    title="まず見るスポット"
+                    meta="県を選んだら、ここから入る"
+                  />
+                  <SelectedSpotPreviewCard
+                    representativeWorkTitle={selectedRepresentativeWork.title}
+                    spot={selectedSpot}
+                  />
+                </div>
+              ) : (
+                <EmptyState message="地域を選んだあと、都道府県をひとつ選ぶと代表スポットと一覧がここに現れます。" />
+              )}
+
+              {prefecture !== "all" ? (
+                <div>
+                  <SectionHeading
+                    title="この県のスポット一覧"
+                    meta={`${prefectureSpots.length}件`}
+                  />
+                  <MapSpotMiniList
+                    onSelect={setSelectedSpotId}
+                    selectedSpotId={selectedSpotId}
+                    spots={miniListItems}
+                  />
+                </div>
+              ) : null}
+
+              {relatedWorks.length > 0 ? (
+                <div className={pageStyles.detailBlock}>
+                  <div className={pageStyles.heroRegion}>この県から読みはじめる</div>
+                  <div className={pageStyles.infoList}>
+                    {relatedWorks.map(({ spot, work }) => (
+                      <div className={pageStyles.infoItem} key={`${spot.spot_id}-${work.work_id}`}>
+                        <div className={pageStyles.infoLabel}>{spot.display_name}</div>
+                        <Link className={pageStyles.infoValueLink} to={`/works/${work.slug}`}>
+                          {work.title} / {work.author}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
           </aside>
         </div>
-      </section>
-
-      <section className={pageStyles.section}>
-        <SectionHeading title="スポット一覧" meta={`${visibleSpots.length}件`} />
-        <MapSpotMiniList
-          onSelect={setSelectedSpotId}
-          selectedSpotId={selectedSpotId}
-          spots={miniListItems}
-        />
       </section>
     </div>
   );

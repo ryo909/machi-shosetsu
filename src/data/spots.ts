@@ -1,7 +1,11 @@
 import type { Spot } from "./types";
+import { getBroadRegionForPrefecture } from "../lib/regions";
 import { spotTextPatches } from "./spotTextPatches";
 
-const rawSpots: Spot[] = [
+// display_name / short_name は街やスポット名を保ち、parent_area / region_key は都道府県分類で統一する。
+type RawSpot = Omit<Spot, "region">;
+
+const rawSpots: RawSpot[] = [
   {
     spot_id: "spot_kinkakuji",
     slug: "kyoto-kinkaku",
@@ -78,7 +82,7 @@ const rawSpots: Spot[] = [
     short_name: "長谷",
     prefecture: "神奈川県",
     city: "鎌倉市",
-    parent_area: "鎌倉",
+    parent_area: "神奈川",
     category: "海辺の町",
     lat: 35.3112,
     lng: 139.5334,
@@ -86,7 +90,7 @@ const rawSpots: Spot[] = [
     display_y: 0.665,
     map_x: 51.5,
     map_y: 66.5,
-    region_key: "kamakura",
+    region_key: "kanagawa",
     priority: 4,
     status: "published",
     list_copy: "寺と坂と海の距離感が、心の揺れまで静かに映してくる。",
@@ -101,7 +105,7 @@ const rawSpots: Spot[] = [
     short_name: "七里ヶ浜／小動岬",
     prefecture: "神奈川県",
     city: "鎌倉市",
-    parent_area: "鎌倉",
+    parent_area: "神奈川",
     category: "海岸",
     lat: 35.3056,
     lng: 139.5099,
@@ -109,7 +113,7 @@ const rawSpots: Spot[] = [
     display_y: 0.685,
     map_x: 50,
     map_y: 68.5,
-    region_key: "kamakura",
+    region_key: "kanagawa",
     priority: 5,
     status: "published",
     list_copy: "明るい海景のそばで読むほど、孤独の輪郭がはっきりしてくる。",
@@ -124,7 +128,7 @@ const rawSpots: Spot[] = [
     short_name: "千光寺〜文学のこみち",
     prefecture: "広島県",
     city: "尾道市",
-    parent_area: "尾道",
+    parent_area: "広島",
     category: "坂道",
     lat: 34.4082,
     lng: 133.1937,
@@ -132,7 +136,7 @@ const rawSpots: Spot[] = [
     display_y: 0.705,
     map_x: 31.5,
     map_y: 70.5,
-    region_key: "onomichi",
+    region_key: "hiroshima",
     priority: 6,
     status: "published",
     list_copy: "坂と路地の重なりが、記憶や逡巡まで風景として残していく。",
@@ -147,7 +151,7 @@ const rawSpots: Spot[] = [
     short_name: "本通り商店街周辺",
     prefecture: "広島県",
     city: "尾道市",
-    parent_area: "尾道",
+    parent_area: "広島",
     category: "商店街",
     lat: 34.4044,
     lng: 133.1915,
@@ -155,7 +159,7 @@ const rawSpots: Spot[] = [
     display_y: 0.72,
     map_x: 33,
     map_y: 72,
-    region_key: "onomichi",
+    region_key: "hiroshima",
     priority: 7,
     status: "published",
     list_copy: "生活の匂いが残る通りで、移ろい続ける日々の物語を拾える。",
@@ -170,7 +174,7 @@ const rawSpots: Spot[] = [
     short_name: "道後温泉本館周辺",
     prefecture: "愛媛県",
     city: "松山市",
-    parent_area: "道後",
+    parent_area: "愛媛",
     category: "温泉街",
     lat: 33.8519,
     lng: 132.7867,
@@ -178,7 +182,7 @@ const rawSpots: Spot[] = [
     display_y: 0.755,
     map_x: 28.5,
     map_y: 75.5,
-    region_key: "dogo",
+    region_key: "ehime",
     priority: 8,
     status: "published",
     list_copy: "湯けむりと古い建物の気分が、軽やかな物語の入口をつくる。",
@@ -193,7 +197,7 @@ const rawSpots: Spot[] = [
     short_name: "旧市街〜運河周辺",
     prefecture: "北海道",
     city: "小樽市",
-    parent_area: "小樽",
+    parent_area: "北海道",
     category: "港町",
     lat: 43.1973,
     lng: 141.0021,
@@ -201,7 +205,7 @@ const rawSpots: Spot[] = [
     display_y: 0.235,
     map_x: 61,
     map_y: 23.5,
-    region_key: "otaru",
+    region_key: "hokkaido",
     priority: 9,
     status: "published",
     list_copy: "石造りの街並みに、北の港町らしい影と静かな異国感が残る。",
@@ -674,15 +678,18 @@ const rawSpots: Spot[] = [
 export const spots: Spot[] = rawSpots.map((spot) => {
   const patch = spotTextPatches[spot.display_name];
 
-  if (!patch) {
-    return spot;
-  }
-
   return {
     ...spot,
-    heroCopy: patch.heroCopy,
-    placeIntro: patch.placeIntro,
-    readingEntry: patch.readingEntry,
-    firstBookReason: patch.firstBookReason,
+    region: getBroadRegionForPrefecture(spot.parent_area),
+    map_mode: spot.map_mode ?? "representative",
+    display_priority: spot.display_priority ?? null,
+    ...(patch
+      ? {
+          heroCopy: patch.heroCopy,
+          placeIntro: patch.placeIntro,
+          readingEntry: patch.readingEntry,
+          firstBookReason: patch.firstBookReason,
+        }
+      : {}),
   };
 });

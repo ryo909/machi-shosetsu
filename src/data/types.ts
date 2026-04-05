@@ -5,16 +5,22 @@ export type Spot = {
   short_name: string;
   prefecture: string;
   city: string;
+  // フィルタ表示は都道府県名で統一し、スポット名とは分離して扱う。
   parent_area: string;
+  // 広域地域フィルタは北海道 / 東北 / 関東 ... の単位で統一する。
+  region: string;
   category: string;
   lat: number | null;
   lng: number | null;
   display_x?: number | null;
   display_y?: number | null;
+  map_mode?: "hidden" | "approx" | "representative";
+  display_priority?: number | null;
   map_x: number | null;
   map_y: number | null;
   fine_dx?: number | null;
   fine_dy?: number | null;
+  // 一覧画面と地図画面は同じ region_key を参照する。
   region_key: string;
   priority: number;
   status: "draft" | "published";

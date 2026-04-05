@@ -11,10 +11,10 @@ import pageStyles from "../../styles/pages.module.css";
 
 const regionAccents: Record<string, string> = {
   kyoto: "rgba(179, 138, 87, 0.12)",
-  kamakura: "rgba(93, 118, 136, 0.1)",
-  onomichi: "rgba(138, 160, 144, 0.1)",
-  dogo: "rgba(169, 123, 108, 0.1)",
-  otaru: "rgba(107, 124, 94, 0.1)",
+  kanagawa: "rgba(93, 118, 136, 0.1)",
+  hiroshima: "rgba(138, 160, 144, 0.1)",
+  ehime: "rgba(169, 123, 108, 0.1)",
+  hokkaido: "rgba(107, 124, 94, 0.1)",
   tokyo: "rgba(136, 113, 90, 0.1)",
 };
 
@@ -56,7 +56,7 @@ export function HomePage() {
       </section>
 
       <section className={pageStyles.section}>
-        <SectionHeading title="地域ショートカット" meta="気分の近い街から選ぶ" />
+        <SectionHeading title="地域ショートカット" meta="気になる都道府県から選ぶ" />
         <div className={pageStyles.grid}>
           {regionShortcuts.map((region) => (
             <Link
