@@ -31,6 +31,21 @@ export function getPublishedSpots(region?: string | null): PublishedSpot[] {
     .sort((a, b) => a.priority - b.priority);
 }
 
+export function getAvailableRegionOptions() {
+  const seen = new Set<string>();
+  const options = [{ value: "all", label: "すべて" }];
+
+  getPublishedSpots().forEach((spot) => {
+    if (seen.has(spot.region_key)) {
+      return;
+    }
+    seen.add(spot.region_key);
+    options.push({ value: spot.region_key, label: spot.parent_area });
+  });
+
+  return options;
+}
+
 export function getMapSpots(region?: RegionKey | string | null): PublishedSpot[] {
   return getPublishedSpots(region).filter(
     (spot) => spot.map_x !== null && spot.map_y !== null,

@@ -9,18 +9,19 @@ import { Header } from "../../components/layout/Header";
 import { JapanMapCard } from "../../components/map/JapanMapCard";
 import { MapSpotMiniList } from "../../components/map/MapSpotMiniList";
 import {
+  getAvailableRegionOptions,
   getAnchorRelationForSpot,
   getMapSpots,
   getRepresentativeWorkForSpot,
   getSpotById,
 } from "../../lib/selectors";
-import { regionOptions } from "../../styles/tokens";
 import pageStyles from "../../styles/pages.module.css";
 
 export function MapPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const region = searchParams.get("region") ?? "all";
   const visibleSpots = getMapSpots(region);
+  const regionOptions = getAvailableRegionOptions();
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(
     visibleSpots[0]?.spot_id ?? null,
   );

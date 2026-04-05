@@ -3,14 +3,19 @@ import { useSearchParams } from "react-router-dom";
 import { SpotCard } from "../../components/cards/SpotCard";
 import { RegionChipGroup } from "../../components/common/RegionChipGroup";
 import { Header } from "../../components/layout/Header";
-import { getPublishedSpots, getRepresentativeWorkForSpot, getRelationsForSpot } from "../../lib/selectors";
-import { regionOptions } from "../../styles/tokens";
+import {
+  getAvailableRegionOptions,
+  getPublishedSpots,
+  getRepresentativeWorkForSpot,
+  getRelationsForSpot,
+} from "../../lib/selectors";
 import pageStyles from "../../styles/pages.module.css";
 
 export function SpotsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const region = searchParams.get("region") ?? "all";
   const visibleSpots = getPublishedSpots(region);
+  const regionOptions = getAvailableRegionOptions();
 
   return (
     <div className={pageStyles.page}>
