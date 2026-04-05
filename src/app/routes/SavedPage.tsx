@@ -1,17 +1,11 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-import { EmptyState } from "../../components/common/EmptyState";
 import { TabSwitcher } from "../../components/common/TabSwitcher";
 import { Header } from "../../components/layout/Header";
 import { getRepresentativeWorkForSpot, getRelationsForSpot, getSavedSpotsByIds, getSavedWorksByIds } from "../../lib/selectors";
 import { useSavedSpots, useSavedWorks } from "../../lib/useSavedItems";
 import pageStyles from "../../styles/pages.module.css";
-
-const tabs = [
-  { value: "spots", label: "保存した場所" },
-  { value: "works", label: "保存した作品" },
-];
 
 export function SavedPage() {
   const [tab, setTab] = useState("spots");
@@ -19,6 +13,10 @@ export function SavedPage() {
   const { savedWorkIds } = useSavedWorks();
   const savedSpots = getSavedSpotsByIds(savedSpotIds);
   const savedWorks = getSavedWorksByIds(savedWorkIds);
+  const tabs = [
+    { value: "spots", label: `保存した場所 (${savedSpots.length})` },
+    { value: "works", label: `保存した作品 (${savedWorks.length})` },
+  ];
 
   return (
     <div className={pageStyles.page}>
@@ -34,6 +32,20 @@ export function SavedPage() {
 
       <section className={pageStyles.savedTabs}>
         <TabSwitcher onChange={setTab} tabs={tabs} value={tab} />
+      </section>
+
+      <section className={pageStyles.section}>
+        <div className={pageStyles.detailBlock}>
+          <div className={pageStyles.heroRegion}>自分の棚</div>
+          <h2 className={pageStyles.spotTitle}>あとで歩く場所と、あとで読む一冊を残しておく</h2>
+          <p className={pageStyles.heroDescription}>
+            旅先で見つけた場所も、気になった作品も、保存しておけば次に開く入口が残ります。読みかけの気分を途切れさせずに戻れる場所です。
+          </p>
+          <div className={pageStyles.selectionSummary}>
+            <div className={pageStyles.summaryPill}>場所: {savedSpots.length}件</div>
+            <div className={pageStyles.summaryPill}>作品: {savedWorks.length}件</div>
+          </div>
+        </div>
       </section>
 
       <section className={pageStyles.section}>
@@ -57,7 +69,12 @@ export function SavedPage() {
               ))}
             </div>
           ) : (
-            <EmptyState message="まだ保存はありません。気になる場所や作品を見つけたら、あとで読めるように残しておけます。" />
+            <div className={pageStyles.detailBlock}>
+              <div className={pageStyles.heroRegion}>まだ保存はありません</div>
+              <p className={pageStyles.heroDescription}>
+                気になる場所を残しておくと、次に歩きたい街からすぐ読み直せます。まずはスポット一覧から、自分の棚に一件置いてみてください。
+              </p>
+            </div>
           )
         ) : savedWorks.length > 0 ? (
           <div className={pageStyles.stack}>
@@ -74,17 +91,22 @@ export function SavedPage() {
             ))}
           </div>
         ) : (
-          <EmptyState message="まだ保存はありません。気になる場所や作品を見つけたら、あとで読めるように残しておけます。" />
+          <div className={pageStyles.detailBlock}>
+            <div className={pageStyles.heroRegion}>まだ保存はありません</div>
+            <p className={pageStyles.heroDescription}>
+              作品を保存しておくと、次に読みたくなったときに場所との関係ごと思い出せます。スポット詳細や作品詳細から残しておけます。
+            </p>
+          </div>
         )}
       </section>
 
       <section className={pageStyles.section}>
         <div className={pageStyles.ctaRow}>
-          <Link className="pillLink secondary" to="/">
-            トップへ戻る
-          </Link>
           <Link className="pillLink" to="/spots">
             スポットを探す
+          </Link>
+          <Link className="pillLink secondary" to="/">
+            トップへ戻る
           </Link>
         </div>
       </section>

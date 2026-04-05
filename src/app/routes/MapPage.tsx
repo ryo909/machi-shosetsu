@@ -136,10 +136,47 @@ export function MapPage() {
       <section className={pageStyles.section}>
         <div className={pageStyles.mapExplorerStage}>
           <aside className={pageStyles.mapFiltersPanel}>
+            <div className={`${pageStyles.detailBlock} ${pageStyles.filterIntroCard}`}>
+              <div className={pageStyles.heroRegion}>はじめかた</div>
+              <h2 className={pageStyles.spotTitle}>地域から、県へ、スポットへ</h2>
+              <div className={pageStyles.stepList}>
+                <div className={pageStyles.stepItem}>
+                  <div className={pageStyles.stepNumber}>1</div>
+                  <div className={pageStyles.stepBody}>
+                    <div className={pageStyles.stepTitle}>広域地域を選ぶ</div>
+                    <div className={pageStyles.stepText}>
+                      まずは北海道、東北、関東のような大きな地域感から絞ります。
+                    </div>
+                  </div>
+                </div>
+                <div className={pageStyles.stepItem}>
+                  <div className={pageStyles.stepNumber}>2</div>
+                  <div className={pageStyles.stepBody}>
+                    <div className={pageStyles.stepTitle}>都道府県を選ぶ</div>
+                    <div className={pageStyles.stepText}>
+                      スポットがある県だけを見ながら、次に気になる土地を決めます。
+                    </div>
+                  </div>
+                </div>
+                <div className={pageStyles.stepItem}>
+                  <div className={pageStyles.stepNumber}>3</div>
+                  <div className={pageStyles.stepBody}>
+                    <div className={pageStyles.stepTitle}>代表スポットから入る</div>
+                    <div className={pageStyles.stepText}>
+                      地図では入口になる数件だけを示し、詳しくは右側の一覧で拾います。
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className={pageStyles.detailBlock}>
               <div className={pageStyles.filterStack}>
                 <div>
-                  <div className={pageStyles.filterLabel}>広域地域を選ぶ</div>
+                  <div className={pageStyles.filterLabel}>1. 広域地域を選ぶ</div>
+                  <p className={pageStyles.filterHelp}>
+                    気分の近い地域から決めると、地図が見やすくなります。
+                  </p>
                   <RegionChipGroup
                     onChange={(nextRegion) => {
                       const next = new URLSearchParams(searchParams);
@@ -167,7 +204,10 @@ export function MapPage() {
                   />
                 </div>
                 <div>
-                  <div className={pageStyles.filterLabel}>都道府県を選ぶ</div>
+                  <div className={pageStyles.filterLabel}>2. 都道府県を選ぶ</div>
+                  <p className={pageStyles.filterHelp}>
+                    県を選ぶと、代表スポットと一覧が右側に現れます。
+                  </p>
                   <RegionChipGroup
                     onChange={(nextPrefecture) => {
                       const next = new URLSearchParams(searchParams);
@@ -191,6 +231,14 @@ export function MapPage() {
                     options={prefectureOptions}
                     value={prefecture}
                   />
+                </div>
+                <div className={pageStyles.selectionSummary}>
+                  <div className={pageStyles.summaryPill}>
+                    地域: {region === "all" ? "未選択" : broadRegionLabels[region as keyof typeof broadRegionLabels]}
+                  </div>
+                  <div className={pageStyles.summaryPill}>
+                    都道府県: {selectedPrefectureOption?.label ?? "未選択"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -231,6 +279,14 @@ export function MapPage() {
                     : "地域から都道府県を選ぶ"}
                 </h2>
                 <p className={pageStyles.heroDescription}>{summaryText}</p>
+                <div className={pageStyles.selectionSummary}>
+                  <div className={pageStyles.summaryPill}>
+                    県マーカー: {prefectureSummaries.length}件
+                  </div>
+                  <div className={pageStyles.summaryPill}>
+                    代表スポット: {representativeSpots.length}件
+                  </div>
+                </div>
               </div>
 
               {selectedSpot && selectedRepresentativeWork ? (
@@ -245,7 +301,7 @@ export function MapPage() {
                   />
                 </div>
               ) : (
-                <EmptyState message="地域を選んだあと、都道府県をひとつ選ぶと代表スポットと一覧がここに現れます。" />
+                <EmptyState message="まずは地域を選び、次に都道府県をひとつ選んでください。県が決まると、入口になる代表スポットと一覧がここに整います。" />
               )}
 
               {prefecture !== "all" ? (

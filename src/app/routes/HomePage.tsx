@@ -39,8 +39,44 @@ export function HomePage() {
       />
 
       <section className={pageStyles.section}>
+        <SectionHeading title="はじめてなら" meta="最初の一歩を選ぶ" />
+        <div className={pageStyles.onboardingGrid}>
+          <Link className={`${pageStyles.detailBlock} ${pageStyles.onboardingCardPrimary}`} to="/spots">
+            <div className={pageStyles.heroRegion}>まずはここから</div>
+            <h2 className={pageStyles.heroTitle}>スポット一覧から入る</h2>
+            <p className={pageStyles.heroDescription}>
+              地域と都道府県を選びながら、気になる場所をひとつ決めて読む流れです。初回はここから始めると、アプリ全体の使い方がつかみやすくなります。
+            </p>
+            <div className={pageStyles.supportMeta}>
+              <strong>向いている人</strong>
+              まず一冊に出会いたい / 迷わず進みたい
+            </div>
+          </Link>
+          <div className={pageStyles.detailBlock}>
+            <div className={pageStyles.heroRegion}>もうひとつの入口</div>
+            <h2 className={pageStyles.spotTitle}>地図から空気で選ぶ</h2>
+            <p className={pageStyles.heroDescription}>
+              地域から都道府県をたどり、旅先や地元の気配から入る導線です。どの県にスポットがあるかを眺めながら決めたいときに向いています。
+            </p>
+            <div className={pageStyles.supportMeta}>
+              <strong>向いている人</strong>
+              旅先から探したい / 県ごとに見比べたい
+            </div>
+            <div className={pageStyles.ctaRow}>
+              <Link className="pillLink secondary" to="/map">
+                地図から探す
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={pageStyles.section}>
         <div className={pageStyles.brandLead}>{APP_TAGLINE}</div>
         <SectionHeading title="まずはここから" meta="はじめてでも入りやすいスポット" />
+        <p className={pageStyles.sectionLead}>
+          迷ったら、この4件から始めるのが自然です。場所の空気と、次に読みたくなる一冊のつながりがつかみやすい入口を並べています。
+        </p>
         <div className={pageStyles.horizontalScroll}>
           {recommendedSpots.map((spot) => {
             const representativeWork = getRepresentativeWorkForSpot(spot.spot_id);

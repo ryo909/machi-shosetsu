@@ -126,3 +126,9 @@
     font-size: 1.08rem;
   }
 }
+
+@media (min-width: 1180px) {
+  .header {
+    padding: 20px 24px 12px;
+  }
+}

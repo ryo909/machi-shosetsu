@@ -1,6 +1,6 @@
 .page {
   display: grid;
-  gap: 36px;
+  gap: 30px;
   padding-bottom: 16px;
 }
 
@@ -26,6 +26,13 @@
   line-height: 1.7;
 }
 
+.sectionLead {
+  margin: -4px 0 16px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
 .horizontalScroll {
   display: grid;
   grid-auto-flow: column;
@@ -48,6 +55,11 @@
 .grid {
   display: grid;
   gap: 14px;
+}
+
+.listGrid {
+  display: grid;
+  gap: 16px;
 }
 
 .heroPanel {
@@ -181,6 +193,75 @@ a.detailBlock:hover,
   border-color: rgba(179, 138, 87, 0.3);
 }
 
+.onboardingGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.onboardingCardPrimary {
+  background:
+    radial-gradient(ellipse at 88% 14%, rgba(179, 138, 87, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(255, 253, 249, 0.95), rgba(246, 240, 230, 0.94));
+  border-color: rgba(179, 138, 87, 0.26);
+}
+
+.supportMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.supportMeta strong {
+  color: var(--accent-2);
+}
+
+.stepList {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.stepItem {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.stepNumber {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(93, 118, 136, 0.1);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.stepBody {
+  min-width: 0;
+}
+
+.stepTitle {
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.stepText {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
 .mutedText {
   color: var(--muted);
   line-height: 1.85;
@@ -229,12 +310,43 @@ a.detailBlock:hover,
   gap: 14px;
 }
 
+.filterIntroCard {
+  display: grid;
+  gap: 12px;
+}
+
 .filterLabel {
   margin: 0 0 10px;
   color: var(--muted);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;
+}
+
+.filterHelp {
+  margin: -2px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+
+.selectionSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.summaryPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(93, 118, 136, 0.08);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .mapStage {
@@ -291,11 +403,23 @@ a.detailBlock:hover,
 }
 
 @media (min-width: 760px) {
+  .page {
+    gap: 28px;
+  }
+
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .onboardingGrid {
+    grid-template-columns: 1.2fr 1fr;
+  }
+
   .subGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .listGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -305,6 +429,17 @@ a.detailBlock:hover,
 }
 
 @media (min-width: 1180px) {
+  .page {
+    gap: 24px;
+  }
+
+  .section,
+  .sectionTight,
+  .savedTabs {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
   .mapStage {
     grid-template-columns: minmax(0, 2.1fr) minmax(280px, 0.95fr);
     align-items: start;

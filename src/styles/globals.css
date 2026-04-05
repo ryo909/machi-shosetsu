@@ -71,12 +71,13 @@ a {
 }
 
 .app-shell {
-  width: min(100%, 720px);
+  width: min(100%, 760px);
   margin: 0 auto;
 }
 
 .app-shell-wide {
-  width: min(100%, 1180px);
+  width: min(100%, 1260px);
+  margin: 0 auto;
 }
 
 .app-main {
