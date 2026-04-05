@@ -1,6 +1,6 @@
 # machi-shosetsu
 
-場所から出会う小説案内のMVPです。  
+まちで見つける小説のMVPです。  
 Vite + React + TypeScript で構築し、静的データと `localStorage` だけで完結します。
 
 ## Scripts

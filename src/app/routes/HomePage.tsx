@@ -5,6 +5,7 @@ import { ActionButton } from "../../components/common/ActionButton";
 import { HeroSection } from "../../components/common/HeroSection";
 import { SectionHeading } from "../../components/common/SectionHeading";
 import { getRecommendedSpots, getRepresentativeWorkForSpot } from "../../lib/selectors";
+import { APP_COPY, APP_NAME, APP_TAGLINE } from "../../lib/site";
 import { regionOptions } from "../../styles/tokens";
 import pageStyles from "../../styles/pages.module.css";
 
@@ -32,12 +33,13 @@ export function HomePage() {
             </ActionButton>
           </>
         }
-        eyebrow="場所から出会う小説案内"
+        eyebrow={APP_NAME}
         text="住んでいる街にも、旅先にも。その場所にゆかりの一冊がきっとある。景色から入り、読みたくなる理由まで受け取れる文学案内です。"
-        title="この街を、物語で歩く。"
+        title={APP_COPY}
       />
 
       <section className={pageStyles.section}>
+        <div className={pageStyles.brandLead}>{APP_TAGLINE}</div>
         <SectionHeading title="まずはここから" meta="はじめてでも入りやすいスポット" />
         <div className={pageStyles.horizontalScroll}>
           {recommendedSpots.map((spot) => {
@@ -60,8 +62,8 @@ export function HomePage() {
             <Link
               className={pageStyles.detailBlock}
               key={region.value}
-              to={`/spots?region=${region.value}`}
               style={{ background: regionAccents[region.value] || undefined }}
+              to={`/spots?region=${region.value}`}
             >
               <div className={pageStyles.heroRegion}>{region.label}</div>
               <div className={pageStyles.heroDescription}>
