@@ -41,9 +41,12 @@
 
 .mapFrame {
   position: relative;
+  display: grid;
+  place-items: center;
   aspect-ratio: 1305 / 720;
-  min-height: 286px;
-  margin: 6px 10px 10px;
+  min-height: 320px;
+  margin: 6px 8px 10px;
+  padding: 8px;
   border-radius: calc(var(--radius) - 6px);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 22%),
@@ -52,27 +55,86 @@
 }
 
 .mapImage {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .mapImageVeil {
   position: absolute;
-  inset: 0;
   background:
     linear-gradient(180deg, rgba(255, 253, 249, 0.02), rgba(255, 253, 249, 0.08)),
     radial-gradient(circle at 12% 18%, rgba(255, 253, 249, 0.14), transparent 26%),
     radial-gradient(circle at 84% 70%, rgba(138, 160, 144, 0.06), transparent 22%);
   pointer-events: none;
+  border-radius: 18px;
 }
 
 .pinsLayer {
   position: absolute;
-  inset: 0;
+  pointer-events: none;
+}
+
+.pinCluster {
+  position: static;
+}
+
+.debugLayer {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.debugLine {
+  stroke: rgba(169, 123, 108, 0.7);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+}
+
+.debugDot {
+  fill: rgba(169, 68, 68, 0.92);
+}
+
+.debugLabel {
+  position: absolute;
+  display: grid;
+  gap: 2px;
+  width: 142px;
+  padding: 8px 10px;
+  border: 1px solid rgba(169, 123, 108, 0.28);
+  border-radius: 12px;
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: 0 6px 16px rgba(66, 46, 28, 0.12);
+  color: var(--ink);
+  font-size: 0.66rem;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.debugLabel strong {
+  color: var(--accent-2);
+  font-size: 0.7rem;
+}
+
+.debugPanel {
+  display: grid;
+  gap: 4px;
+  padding: 0 14px 14px;
+}
+
+.debugPanelTitle {
+  color: var(--accent-2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.debugPanelMeta {
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .pin {
@@ -89,7 +151,7 @@
   color: var(--accent);
   transform: translate(-50%, -100%) rotate(-45deg);
   transition: transform 280ms var(--ease-out), background-color 280ms var(--ease-out), border-color 280ms var(--ease-out), box-shadow 280ms var(--ease-out);
-  z-index: 2;
+  pointer-events: auto;
 }
 
 .pin:hover {
@@ -255,8 +317,9 @@
 
 @media (min-width: 1024px) {
   .mapFrame {
-    min-height: 460px;
-    margin: 6px 12px 12px;
+    min-height: 500px;
+    margin: 6px 10px 12px;
+    padding: 10px;
   }
 
   .pin {

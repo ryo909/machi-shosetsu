@@ -20,6 +20,7 @@ import pageStyles from "../../styles/pages.module.css";
 export function MapPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const region = searchParams.get("region") ?? "all";
+  const debugMap = import.meta.env.DEV && searchParams.get("debugMap") === "1";
   const visibleSpots = getMapSpots(region);
   const regionOptions = getAvailableRegionOptions();
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(
@@ -81,6 +82,7 @@ export function MapPage() {
         <div className={pageStyles.mapStage}>
           <div className={pageStyles.mapMainColumn}>
             <JapanMapCard
+              debug={debugMap}
               onSelect={setSelectedSpotId}
               selectedSpotId={selectedSpotId}
               spots={visibleSpots}

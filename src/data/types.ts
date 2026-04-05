@@ -11,6 +11,8 @@ export type Spot = {
   lng: number | null;
   map_x: number | null;
   map_y: number | null;
+  fine_dx?: number | null;
+  fine_dy?: number | null;
   region_key: string;
   priority: number;
   status: "draft" | "published";
