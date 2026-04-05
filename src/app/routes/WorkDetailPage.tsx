@@ -50,6 +50,14 @@ export function WorkDetailPage() {
         actions={<SaveButton active={isSaved(work.work_id)} onClick={() => toggle(work.work_id)} />}
         backLabel={activePair ? `${activePair.spot.short_name}へ戻る` : "スポット一覧へ"}
         backTo={activePair ? `/spots/${activePair.spot.slug}` : "/spots"}
+        breadcrumbs={[
+          { label: "ホーム", to: "/" },
+          { label: "スポット一覧", to: "/spots" },
+          ...(activePair
+            ? [{ label: activePair.spot.short_name, to: `/spots/${activePair.spot.slug}` }]
+            : []),
+          { label: work.title },
+        ]}
         eyebrow="作品詳細"
         title={work.title}
       />
@@ -117,6 +125,9 @@ export function WorkDetailPage() {
       <section className={pageStyles.section}>
         <SectionHeading title="次の動き" />
         <div className={pageStyles.ctaRow}>
+          <Link className="pillLink secondary" to="/">
+            トップへ戻る
+          </Link>
           {activePair ? (
             <Link className="pillLink" to={`/spots/${activePair.spot.slug}`}>
               この場所へ戻る

@@ -41,10 +41,11 @@
 
 .mapFrame {
   position: relative;
-  aspect-ratio: 0.8;
+  aspect-ratio: 0.86;
   margin: 8px 16px 16px;
   border-radius: calc(var(--radius) - 6px);
   background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.25), transparent 28%),
     radial-gradient(ellipse at 20% 15%, rgba(93, 118, 136, 0.07), transparent 30%),
     radial-gradient(ellipse at 80% 70%, rgba(138, 160, 144, 0.06), transparent 30%),
     linear-gradient(180deg, rgba(93, 118, 136, 0.05), rgba(138, 160, 144, 0.06));
@@ -59,9 +60,16 @@
 .land {
   fill: rgba(136, 113, 90, 0.16);
   stroke: rgba(116, 105, 93, 0.32);
-  stroke-width: 1.5;
+  stroke-width: 2;
   stroke-linejoin: round;
   transition: fill var(--transition-base);
+}
+
+.mapLabel {
+  fill: rgba(116, 105, 93, 0.72);
+  font-family: var(--font-serif);
+  font-size: 11px;
+  letter-spacing: 0.18em;
 }
 
 .guide {

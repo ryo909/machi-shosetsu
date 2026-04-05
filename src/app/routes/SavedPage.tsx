@@ -23,6 +23,10 @@ export function SavedPage() {
   return (
     <div className={pageStyles.page}>
       <Header
+        breadcrumbs={[
+          { label: "ホーム", to: "/" },
+          { label: "保存一覧" },
+        ]}
         description="気になった場所と作品を、あとで読むための自分の棚として残せます。"
         eyebrow="保存一覧"
         title="あとで歩く、あとで読む"
@@ -72,6 +76,17 @@ export function SavedPage() {
         ) : (
           <EmptyState message="まだ保存はありません。気になる場所や作品を見つけたら、あとで読めるように残しておけます。" />
         )}
+      </section>
+
+      <section className={pageStyles.section}>
+        <div className={pageStyles.ctaRow}>
+          <Link className="pillLink secondary" to="/">
+            トップへ戻る
+          </Link>
+          <Link className="pillLink" to="/spots">
+            スポットを探す
+          </Link>
+        </div>
       </section>
     </div>
   );

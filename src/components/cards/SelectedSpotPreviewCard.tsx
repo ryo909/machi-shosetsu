@@ -17,6 +17,10 @@ export function SelectedSpotPreviewCard({
       <div className={styles.spotRegion}>{spot.parent_area}</div>
       <h3 className={styles.featuredTitle}>{spot.display_name}</h3>
       <p className={styles.copy}>{spot.list_copy}</p>
+      <div className={styles.meta}>
+        <span>{spot.city}</span>
+        <span>{spot.category}</span>
+      </div>
       <div className={styles.spotWork}>代表作品: {representativeWorkTitle}</div>
       <div className={styles.previewActions}>
         <Link className={styles.cta} to={`/spots/${spot.slug}`}>

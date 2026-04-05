@@ -15,6 +15,10 @@ export function SpotsPage() {
   return (
     <div className={pageStyles.page}>
       <Header
+        breadcrumbs={[
+          { label: "ホーム", to: "/" },
+          { label: "スポット一覧" },
+        ]}
         description="街の気分から場所を選び、その先の一冊へつなげます。名所検索ではなく、読みたくなる入口として並べています。"
         eyebrow="スポット一覧"
         title="場所から一冊を選ぶ"

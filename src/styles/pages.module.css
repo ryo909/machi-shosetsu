@@ -161,6 +161,21 @@ a.detailBlock:hover,
   padding: 0 20px;
 }
 
+.mapStage {
+  display: grid;
+  gap: 18px;
+}
+
+.mapMainColumn {
+  min-width: 0;
+}
+
+.mapPreviewColumn {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
 /* Saved page bookshelf accent */
 .savedItem {
   border-left: 3px solid var(--gold);
@@ -181,5 +196,17 @@ a.detailBlock:hover,
 
   .horizontalScroll {
     grid-auto-columns: minmax(280px, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mapStage {
+    grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr);
+    align-items: start;
+  }
+
+  .mapPreviewColumn {
+    position: sticky;
+    top: 24px;
   }
 }

@@ -51,7 +51,11 @@ export function MapPage() {
   return (
     <div className={pageStyles.page}>
       <Header
-        description="日本地図の上から気になる土地を選び、そこに似合う一冊へつなぎます。地理の正確さより、押しやすさと眺める楽しさを優先したMVPです。"
+        breadcrumbs={[
+          { label: "ホーム", to: "/" },
+          { label: "地図から探す" },
+        ]}
+        description="日本地図の上から気になる土地を選び、その場所から次の一冊へつなぎます。位置関係をつかみやすくしつつ、押しやすさも優先した文学スポットマップです。"
         eyebrow="地図から探す"
         title="文学スポットマップ"
       />
@@ -73,23 +77,26 @@ export function MapPage() {
       </section>
 
       <section className={pageStyles.section}>
-        <JapanMapCard
-          onSelect={setSelectedSpotId}
-          selectedSpotId={selectedSpotId}
-          spots={visibleSpots}
-        />
-      </section>
-
-      <section className={pageStyles.section}>
-        <SectionHeading title="選択中のスポット" />
-        {selectedSpot && selectedRepresentativeWork ? (
-          <SelectedSpotPreviewCard
-            representativeWorkTitle={selectedRepresentativeWork.title}
-            spot={selectedSpot}
-          />
-        ) : (
-          <EmptyState message="気になる場所をタップしてください。選んだスポットの代表作品をここで案内します。" />
-        )}
+        <div className={pageStyles.mapStage}>
+          <div className={pageStyles.mapMainColumn}>
+            <JapanMapCard
+              onSelect={setSelectedSpotId}
+              selectedSpotId={selectedSpotId}
+              spots={visibleSpots}
+            />
+          </div>
+          <aside className={pageStyles.mapPreviewColumn}>
+            <SectionHeading title="選択中のスポット" meta={selectedSpot ? "地図を見ながら確認" : "まずは地図から選ぶ"} />
+            {selectedSpot && selectedRepresentativeWork ? (
+              <SelectedSpotPreviewCard
+                representativeWorkTitle={selectedRepresentativeWork.title}
+                spot={selectedSpot}
+              />
+            ) : (
+              <EmptyState message="地図上のスポットを選ぶと、ここに案内が表示されます。旅先や気になる街を選んでください。" />
+            )}
+          </aside>
+        </div>
       </section>
 
       <section className={pageStyles.section}>

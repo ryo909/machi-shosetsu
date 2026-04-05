@@ -36,6 +36,11 @@ export function SpotDetailPage() {
         actions={<SaveButton active={isSaved(spot.spot_id)} onClick={() => toggle(spot.spot_id)} />}
         backLabel="スポット一覧へ"
         backTo="/spots"
+        breadcrumbs={[
+          { label: "ホーム", to: "/" },
+          { label: "スポット一覧", to: "/spots" },
+          { label: spot.display_name },
+        ]}
         eyebrow={spot.parent_area}
         title={spot.display_name}
       />
@@ -109,6 +114,9 @@ export function SpotDetailPage() {
           ))}
         </div>
         <div className={pageStyles.ctaRow}>
+          <Link className="pillLink secondary" to="/">
+            トップへ戻る
+          </Link>
           <Link className="textLink" to="/spots">
             スポット一覧へ戻る
           </Link>
